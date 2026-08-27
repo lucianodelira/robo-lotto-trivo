@@ -1,417 +1,218 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
 <meta charset="UTF-8">
-
-<meta name="viewport"
-content="width=device-width,initial-scale=1">
-
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lotto Trivo Analyzer</title>
-
 <style>
-
-body{
-  font-family:Arial,sans-serif;
-  margin:0;
-  padding:20px;
-  background:#111;
-  color:#fff;
-}
-
-.container{
-  max-width:900px;
-  margin:auto;
-}
-
-h1{
-  text-align:center;
-}
-
-.status{
-  padding:15px;
-  border-radius:10px;
-  background:#222;
-  margin-bottom:15px;
-}
-
-button{
-  width:100%;
-  padding:15px;
-  margin:6px 0;
-  border:0;
-  border-radius:8px;
-  font-size:16px;
-  cursor:pointer;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:
-    repeat(auto-fit,minmax(130px,1fr));
-  gap:10px;
-  margin-top:20px;
-}
-
-.card{
-  background:#222;
-  padding:15px;
-  border-radius:10px;
-}
-
-.numero{
-  font-size:28px;
-  font-weight:bold;
-}
-
-.pequeno{
-  font-size:13px;
-  opacity:.7;
-}
-
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background: #111;
+    color: #fff;
+  }
+  .container {
+    max-width: 900px;
+    margin: auto;
+  }
+  h1 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  .status {
+    padding: 15px;
+    border-radius: 10px;
+    background: #222;
+    margin-bottom: 15px;
+    line-height: 1.5;
+  }
+  button {
+    width: 100%;
+    padding: 15px;
+    margin: 6px 0;
+    border: 0;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    background: #333;
+    color: #fff;
+    transition: background 0.2s;
+  }
+  button:hover {
+    background: #444;
+  }
+  button:active {
+    background: #555;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-top: 20px;
+  }
+  .card {
+    background: #222;
+    padding: 15px;
+    border-radius: 10px;
+    text-align: center;
+  }
+  .numero {
+    font-size: 26px;
+    font-weight: bold;
+    margin: 6px 0;
+  }
+  .pequeno {
+    font-size: 13px;
+    opacity: 0.7;
+  }
 </style>
-
 </head>
-
 <body>
-
 <div class="container">
+  <h1>LOTTO TRIVO</h1>
 
-<h1>LOTTO TRIVO</h1>
+  <div class="status" id="status">Carregando...</div>
 
-<div class="status" id="status">
-Carregando...
-</div>
+  <button onclick="coletar()">🔄 Coletar resultados</button>
+  <button onclick="previsao()">📊 Atualizar análise</button>
+  <button onclick="backtest()">🧪 Testar estratégia</button>
 
-<button onclick="coletar()">
-🔄 Coletar resultados
-</button>
-
-<button onclick="previsao()">
-📊 Atualizar análise
-</button>
-
-<button onclick="backtest()">
-🧪 Testar estratégia
-</button>
-
-<div
-class="grid"
-id="resultados">
-</div>
-
+  <div class="grid" id="resultados"></div>
 </div>
 
 <script>
-
 /*
  * COLOQUE A URL DO SEU GOOGLE APPS SCRIPT
- * depois de publicar como Web App.
+ * depois de publicar como Web App (Executar como: Eu / Acesso: Qualquer pessoa)
  */
+const API = 'https://script.google.com/macros/s/AKfycbwTGOPfILZKZcb36qioFeusblOE_7LRcAUNfq6tOmkpWgYRI0LHaroIkrSbyIiSn47M/exec';
 
-const API =
-'https://script.google.com/macros/s/AKfycbwTGOPfILZKZcb36qioFeusblOE_7LRcAUNfq6tOmkpWgYRI0LHaroIkrSbyIiSn47M/exec';
+async function api(action) {
+  const url = API + '?action=' + encodeURIComponent(action);
+  const resposta = await fetch(url);
 
-
-async function api(action){
-
-  const url =
-    API +
-    '?action=' +
-    encodeURIComponent(action);
-
-  const resposta =
-    await fetch(url);
-
-  if(!resposta.ok){
-    throw new Error(
-      'Erro HTTP ' +
-      resposta.status
-    );
+  if (!resposta.ok) {
+    throw new Error('Erro HTTP ' + resposta.status);
   }
 
-  return resposta.json();
-}
+  const json = await resposta.json();
 
-
-async function status(){
-
-  try{
-
-    const r =
-      await api('status');
-
-    document.getElementById(
-      'status'
-    ).innerHTML =
-      '🟢 Sistema online<br>' +
-      r.hora;
-
-  }catch(e){
-
-    document.getElementById(
-      'status'
-    ).innerHTML =
-      '🔴 API indisponível';
-
+  if (json.sucesso === false) {
+    throw new Error(json.erro || 'Erro desconhecido na API');
   }
 
+  return json;
 }
 
+async function status() {
+  try {
+    const r = await api('status');
+    document.getElementById('status').innerHTML =
+      '🟢 Sistema online<br>' + (r.hora || '');
+  } catch (e) {
+    document.getElementById('status').innerHTML =
+      '🔴 API indisponível<br><small>' + e.message + '</small>';
+  }
+}
 
-async function coletar(){
-
-  mostrar(
-    'Coletando Lotto Trivo...'
-  );
-
-  try{
-
-    const r =
-      await api('coletar');
-
+async function coletar() {
+  mostrar('Coletando Lotto Trivo...');
+  try {
+    const r = await api('coletar');
     mostrar(
       'Coleta concluída.<br>' +
-      'Encontrados: ' +
-      r.encontrados +
-      '<br>Gravados: ' +
-      r.gravados
+      'Encontrados: ' + (r.encontrados || 0) +
+      '<br>Gravados: ' + (r.gravados || 0)
     );
-
     carregar();
-
-  }catch(e){
-
-    mostrar(
-      'Erro: ' +
-      e.message
-    );
-
+  } catch (e) {
+    mostrar('Erro: ' + e.message);
   }
-
 }
 
-
-async function carregar(){
-
-  try{
-
-    const r =
-      await api('resultados');
-
-    const div =
-      document.getElementById(
-        'resultados'
-      );
-
+async function carregar() {
+  try {
+    const r = await api('resultados');
+    const div = document.getElementById('resultados');
     div.innerHTML = '';
 
-    if(
-      !r.resultados ||
-      !r.resultados.length
-    ){
-
-      div.innerHTML =
-        '<div class="card">' +
-        'Nenhum resultado.' +
-        '</div>';
-
+    if (!r.resultados || !r.resultados.length) {
+      div.innerHTML = '<div class="card">Nenhum resultado.</div>';
       return;
     }
 
-    r.resultados.forEach(
-      concurso => {
-
-        concurso.numeros.forEach(
-          (numero,pos) => {
-
-            const card =
-              document.createElement(
-                'div'
-              );
-
-            card.className =
-              'card';
-
-            card.innerHTML =
-              '<div class="pequeno">' +
-              'Posição ' +
-              (pos + 1) +
-              '</div>' +
-
-              '<div class="numero">' +
-              numero +
-              '</div>' +
-
-              '<div class="pequeno">' +
-              concurso.data +
-              ' ' +
-              concurso.hora +
-              '</div>';
-
-            div.appendChild(card);
-
-          }
-        );
-
-      }
-    );
-
-  }catch(e){
-
-    mostrar(
-      'Erro ao carregar resultados.'
-    );
-
+    r.resultados.forEach(concurso => {
+      (concurso.numeros || []).forEach((numero, pos) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML =
+          '<div class="pequeno">Posição ' + (pos + 1) + '</div>' +
+          '<div class="numero">' + numero + '</div>' +
+          '<div class="pequeno">' + (concurso.data || '') + ' ' + (concurso.hora || '') + '</div>';
+        div.appendChild(card);
+      });
+    });
+  } catch (e) {
+    mostrar('Erro ao carregar resultados: ' + e.message);
   }
-
 }
 
-
-async function previsao(){
-
-  mostrar(
-    'Calculando análise...'
-  );
-
-  try{
-
-    const r =
-      await api('previsao');
-
-    mostrar(
-      'Análise atualizada.<br>' +
-      'Confira os candidatos abaixo.'
-    );
-
-    carregarPrevisao(
-      r.previsoes
-    );
-
-  }catch(e){
-
-    mostrar(
-      'Erro: ' +
-      e.message
-    );
-
+async function previsao() {
+  mostrar('Calculando análise...');
+  try {
+    const r = await api('previsao');
+    mostrar('Análise atualizada.<br>Confira os candidatos abaixo.');
+    carregarPrevisao(r.previsoes || []);
+  } catch (e) {
+    mostrar('Erro: ' + e.message);
   }
-
 }
 
-
-function carregarPrevisao(
-  previsoes
-){
-
-  const div =
-    document.getElementById(
-      'resultados'
-    );
-
+function carregarPrevisao(previsoes) {
+  const div = document.getElementById('resultados');
   div.innerHTML = '';
 
-  previsoes.forEach(
-    p => {
-
-      const card =
-        document.createElement(
-          'div'
-        );
-
-      card.className =
-        'card';
-
-      card.innerHTML =
-
-        '<div class="pequeno">' +
-        'Posição ' +
-        p.posicao +
-        '</div>' +
-
-        '<div class="numero">' +
-        p.candidato +
-        '</div>' +
-
-        '<div class="pequeno">' +
-        'Score: ' +
-        p.pontuacao +
-        '</div>' +
-
-        '<div class="pequeno">' +
-        'Freq.: ' +
-        p.frequencia +
-        '</div>' +
-
-        '<div class="pequeno">' +
-        'Atraso: ' +
-        p.atraso +
-        '</div>';
-
-      div.appendChild(card);
-
-    }
-  );
-
-}
-
-
-async function backtest(){
-
-  mostrar(
-    'Executando backtest...'
-  );
-
-  try{
-
-    const r =
-      await api('backtest');
-
-    mostrar(
-
-      '🧪 BACKTEST<br><br>' +
-
-      'Testes: ' +
-      r.testes +
-      '<br>' +
-
-      'Acertos Top 10: ' +
-      r.acertos +
-      '<br>' +
-
-      'Taxa: ' +
-      r.taxa_acerto_top10 +
-      '%'
-
-    );
-
-  }catch(e){
-
-    mostrar(
-      'Erro no backtest: ' +
-      e.message
-    );
-
+  if (!previsoes.length) {
+    div.innerHTML = '<div class="card">Nenhuma previsão disponível.</div>';
+    return;
   }
 
+  previsoes.forEach(p => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML =
+      '<div class="pequeno">Posição ' + (p.posicao || '-') + '</div>' +
+      '<div class="numero">' + (p.candidato || '-') + '</div>' +
+      '<div class="pequeno">Score: ' + (p.pontuacao ?? '-') + '</div>' +
+      '<div class="pequeno">Freq.: ' + (p.frequencia ?? '-') + '</div>' +
+      '<div class="pequeno">Atraso: ' + (p.atraso ?? '-') + '</div>';
+    div.appendChild(card);
+  });
 }
 
-
-function mostrar(texto){
-
-  document.getElementById(
-    'status'
-  ).innerHTML =
-    texto;
-
+async function backtest() {
+  mostrar('Executando backtest...');
+  try {
+    const r = await api('backtest');
+    mostrar(
+      '🧪 BACKTEST<br><br>' +
+      'Testes: ' + (r.testes || 0) + '<br>' +
+      'Acertos Top 10: ' + (r.acertos || 0) + '<br>' +
+      'Taxa: ' + (r.taxa_acerto_top10 || 0) + '%'
+    );
+  } catch (e) {
+    mostrar('Erro no backtest: ' + e.message);
+  }
 }
 
+function mostrar(texto) {
+  document.getElementById('status').innerHTML = texto;
+}
 
+// Inicialização
 status();
-
 carregar();
-
 </script>
-
 </body>
 </html>
