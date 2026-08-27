@@ -1,148 +1,417 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
-  <meta charset="UTF-8" />
-  <title>Bolão Loteria Federal</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <link rel="stylesheet" href="Styles.css" />
-  <style>
-    body { font-family: Arial, sans-serif; background:#f4f4f4; margin:0; padding:0 }
-    header { background:#1d3557; color:#fff; padding:15px; text-align:center }
-    .container { padding:20px; max-width:900px; margin:auto }
-    .card { background:#fff; padding:20px; border-radius:10px; margin-bottom:20px }
-    input, button { padding:10px; width:100%; margin-top:10px }
-    button { background:#1d3557; color:#fff; border:none; border-radius:6px; cursor:pointer }
-    button:disabled { background:#999 }
-    .stats { display:flex; justify-content:space-between; gap:10px }
-    .stats div { flex:1; background:#e9ecef; padding:10px; border-radius:8px; text-align:center }
-    ul { list-style:none; padding:0 }
-    li { padding:8px; border-bottom:1px solid #ddd }
-    .hidden { display:none }
-  </style>
+<meta charset="UTF-8">
+
+<meta name="viewport"
+content="width=device-width,initial-scale=1">
+
+<title>Lotto Trivo Analyzer</title>
+
+<style>
+
+body{
+  font-family:Arial,sans-serif;
+  margin:0;
+  padding:20px;
+  background:#111;
+  color:#fff;
+}
+
+.container{
+  max-width:900px;
+  margin:auto;
+}
+
+h1{
+  text-align:center;
+}
+
+.status{
+  padding:15px;
+  border-radius:10px;
+  background:#222;
+  margin-bottom:15px;
+}
+
+button{
+  width:100%;
+  padding:15px;
+  margin:6px 0;
+  border:0;
+  border-radius:8px;
+  font-size:16px;
+  cursor:pointer;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:
+    repeat(auto-fit,minmax(130px,1fr));
+  gap:10px;
+  margin-top:20px;
+}
+
+.card{
+  background:#222;
+  padding:15px;
+  border-radius:10px;
+}
+
+.numero{
+  font-size:28px;
+  font-weight:bold;
+}
+
+.pequeno{
+  font-size:13px;
+  opacity:.7;
+}
+
+</style>
+
 </head>
+
 <body>
-<header>
-  <h1>🎟️ Bolão da Loteria Federal</h1>
-  <p>Valor da cota: R$ 18,00 | Total: 200 cotas</p>
-</header>
 
 <div class="container">
 
-  <div class="card" id="registerCard">
-    <h2>Entrar no Bolão</h2>
-    <input type="text" id="name" placeholder="Seu nome completo" />
-    <input type="tel" id="phone" placeholder="Seu telefone (WhatsApp)" />
-    <button onclick="startPayment()">Gerar PIX e Participar</button>
-  </div>
+<h1>LOTTO TRIVO</h1>
 
-  <div class="card">
-    <h3>Status do Bolão</h3>
-    <div class="stats">
-      <div>
-        <strong id="freeCotas">200</strong><br />Disponíveis
-      </div>
-      <div>
-        <strong id="usedCotas">0</strong><br />Ocupadas
-      </div>
-      <div>
-        <strong>200</strong><br />Total
-      </div>
-    </div>
-  </div>
+<div class="status" id="status">
+Carregando...
+</div>
 
-  <div class="card hidden" id="memberArea">
-    <h2>Bem-vindo ao Bolão</h2>
-    <p><strong>Nome:</strong> <span id="memberName"></span></p>
-    <p><strong>Telefone:</strong> <span id="memberPhone"></span></p>
-    <button onclick="showPalpites()">Ver meu bolão</button>
-  </div>
+<button onclick="coletar()">
+🔄 Coletar resultados
+</button>
 
-  <div class="card hidden" id="palpitesArea">
-    <h3>Palpites do Bolão</h3>
-    <p>(Exemplo ilustrativo – números oficiais podem ser inseridos manualmente)</p>
-    <ul>
-      <li>Bilhete: 12345</li>
-      <li>Bilhete: 67890</li>
-      <li>Bilhete: 54321</li>
-    </ul>
-  </div>
+<button onclick="previsao()">
+📊 Atualizar análise
+</button>
 
-  <div class="card">
-    <h3>👥 Participantes</h3>
-    <ul id="participantsList"></ul>
-  </div>
+<button onclick="backtest()">
+🧪 Testar estratégia
+</button>
+
+<div
+class="grid"
+id="resultados">
+</div>
 
 </div>
 
-<script src="Modal.js"></script>
-<script src="Script.js"></script>
 <script>
-const MAX_COTAS = 200;
 
-function getParticipants() {
-  return JSON.parse(localStorage.getItem('participants') || '[]');
-}
+/*
+ * COLOQUE A URL DO SEU GOOGLE APPS SCRIPT
+ * depois de publicar como Web App.
+ */
 
-function saveParticipants(list) {
-  localStorage.setItem('participants', JSON.stringify(list));
-}
+const API =
+'https://script.google.com/macros/s/AKfycbwTGOPfILZKZcb36qioFeusblOE_7LRcAUNfq6tOmkpWgYRI0LHaroIkrSbyIiSn47M/exec';
 
-function updateStats() {
-  const list = getParticipants();
-  document.getElementById('usedCotas').innerText = list.length;
-  document.getElementById('freeCotas').innerText = MAX_COTAS - list.length;
-  const ul = document.getElementById('participantsList');
-  ul.innerHTML = '';
-  list.forEach(p => {
-    const li = document.createElement('li');
-    li.textContent = p.name + ' - ' + p.phone;
-    ul.appendChild(li);
-  });
-}
 
-function startPayment() {
-  const name = document.getElementById('name').value.trim();
-  const phone = document.getElementById('phone').value.trim();
-  if (!name || !phone) {
-    alert('Preencha nome e telefone');
-    return;
+async function api(action){
+
+  const url =
+    API +
+    '?action=' +
+    encodeURIComponent(action);
+
+  const resposta =
+    await fetch(url);
+
+  if(!resposta.ok){
+    throw new Error(
+      'Erro HTTP ' +
+      resposta.status
+    );
   }
-  localStorage.setItem('pendingUser', JSON.stringify({ name, phone }));
-  openPaymentModal();
+
+  return resposta.json();
 }
 
-function unlockAccess() {
-  const user = JSON.parse(localStorage.getItem('pendingUser'));
-  if (!user) return;
-  const list = getParticipants();
-  if (list.length >= MAX_COTAS) return;
-  list.push(user);
-  saveParticipants(list);
-  localStorage.setItem('member', JSON.stringify(user));
-  localStorage.removeItem('pendingUser');
+
+async function status(){
+
+  try{
+
+    const r =
+      await api('status');
+
+    document.getElementById(
+      'status'
+    ).innerHTML =
+      '🟢 Sistema online<br>' +
+      r.hora;
+
+  }catch(e){
+
+    document.getElementById(
+      'status'
+    ).innerHTML =
+      '🔴 API indisponível';
+
+  }
+
 }
 
-function loadMember() {
-  const member = JSON.parse(localStorage.getItem('member'));
-  if (!member) return;
-  document.getElementById('registerCard').classList.add('hidden');
-  document.getElementById('memberArea').classList.remove('hidden');
-  document.getElementById('memberName').innerText = member.name;
-  document.getElementById('memberPhone').innerText = member.phone;
+
+async function coletar(){
+
+  mostrar(
+    'Coletando Lotto Trivo...'
+  );
+
+  try{
+
+    const r =
+      await api('coletar');
+
+    mostrar(
+      'Coleta concluída.<br>' +
+      'Encontrados: ' +
+      r.encontrados +
+      '<br>Gravados: ' +
+      r.gravados
+    );
+
+    carregar();
+
+  }catch(e){
+
+    mostrar(
+      'Erro: ' +
+      e.message
+    );
+
+  }
+
 }
 
-function showPalpites() {
-  document.getElementById('palpitesArea').classList.toggle('hidden');
+
+async function carregar(){
+
+  try{
+
+    const r =
+      await api('resultados');
+
+    const div =
+      document.getElementById(
+        'resultados'
+      );
+
+    div.innerHTML = '';
+
+    if(
+      !r.resultados ||
+      !r.resultados.length
+    ){
+
+      div.innerHTML =
+        '<div class="card">' +
+        'Nenhum resultado.' +
+        '</div>';
+
+      return;
+    }
+
+    r.resultados.forEach(
+      concurso => {
+
+        concurso.numeros.forEach(
+          (numero,pos) => {
+
+            const card =
+              document.createElement(
+                'div'
+              );
+
+            card.className =
+              'card';
+
+            card.innerHTML =
+              '<div class="pequeno">' +
+              'Posição ' +
+              (pos + 1) +
+              '</div>' +
+
+              '<div class="numero">' +
+              numero +
+              '</div>' +
+
+              '<div class="pequeno">' +
+              concurso.data +
+              ' ' +
+              concurso.hora +
+              '</div>';
+
+            div.appendChild(card);
+
+          }
+        );
+
+      }
+    );
+
+  }catch(e){
+
+    mostrar(
+      'Erro ao carregar resultados.'
+    );
+
+  }
+
 }
 
-// Integração: quando o Script.js libera acesso
-if (localStorage.getItem('privilegeAccess') === 'true') {
-  unlockAccess();
-  localStorage.removeItem('privilegeAccess');
+
+async function previsao(){
+
+  mostrar(
+    'Calculando análise...'
+  );
+
+  try{
+
+    const r =
+      await api('previsao');
+
+    mostrar(
+      'Análise atualizada.<br>' +
+      'Confira os candidatos abaixo.'
+    );
+
+    carregarPrevisao(
+      r.previsoes
+    );
+
+  }catch(e){
+
+    mostrar(
+      'Erro: ' +
+      e.message
+    );
+
+  }
+
 }
 
-updateStats();
-loadMember();
+
+function carregarPrevisao(
+  previsoes
+){
+
+  const div =
+    document.getElementById(
+      'resultados'
+    );
+
+  div.innerHTML = '';
+
+  previsoes.forEach(
+    p => {
+
+      const card =
+        document.createElement(
+          'div'
+        );
+
+      card.className =
+        'card';
+
+      card.innerHTML =
+
+        '<div class="pequeno">' +
+        'Posição ' +
+        p.posicao +
+        '</div>' +
+
+        '<div class="numero">' +
+        p.candidato +
+        '</div>' +
+
+        '<div class="pequeno">' +
+        'Score: ' +
+        p.pontuacao +
+        '</div>' +
+
+        '<div class="pequeno">' +
+        'Freq.: ' +
+        p.frequencia +
+        '</div>' +
+
+        '<div class="pequeno">' +
+        'Atraso: ' +
+        p.atraso +
+        '</div>';
+
+      div.appendChild(card);
+
+    }
+  );
+
+}
+
+
+async function backtest(){
+
+  mostrar(
+    'Executando backtest...'
+  );
+
+  try{
+
+    const r =
+      await api('backtest');
+
+    mostrar(
+
+      '🧪 BACKTEST<br><br>' +
+
+      'Testes: ' +
+      r.testes +
+      '<br>' +
+
+      'Acertos Top 10: ' +
+      r.acertos +
+      '<br>' +
+
+      'Taxa: ' +
+      r.taxa_acerto_top10 +
+      '%'
+
+    );
+
+  }catch(e){
+
+    mostrar(
+      'Erro no backtest: ' +
+      e.message
+    );
+
+  }
+
+}
+
+
+function mostrar(texto){
+
+  document.getElementById(
+    'status'
+  ).innerHTML =
+    texto;
+
+}
+
+
+status();
+
+carregar();
+
 </script>
+
 </body>
 </html>
