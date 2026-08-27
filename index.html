@@ -5,66 +5,99 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Lotto Trivo Analyzer</title>
 <style>
+  * { box-sizing: border-box; }
   body {
     font-family: Arial, sans-serif;
     margin: 0;
-    padding: 20px;
-    background: #111;
+    padding: 16px;
+    background: #0f0f0f;
     color: #fff;
   }
-  .container {
-    max-width: 900px;
-    margin: auto;
-  }
-  h1 {
-    text-align: center;
-    margin-bottom: 20px;
-  }
+  .container { max-width: 1000px; margin: auto; }
+  h1 { text-align: center; margin-bottom: 8px; }
   .status {
-    padding: 15px;
+    padding: 14px;
     border-radius: 10px;
-    background: #222;
-    margin-bottom: 15px;
-    line-height: 1.5;
+    background: #1c1c1c;
+    margin-bottom: 14px;
+    line-height: 1.45;
+    font-size: 14px;
   }
   button {
     width: 100%;
-    padding: 15px;
-    margin: 6px 0;
+    padding: 14px;
+    margin: 5px 0;
     border: 0;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 15px;
     cursor: pointer;
-    background: #333;
+    background: #2a2a2a;
     color: #fff;
-    transition: background 0.2s;
   }
-  button:hover {
-    background: #444;
+  button:hover { background: #3a3a3a; }
+  .section {
+    margin-top: 22px;
   }
-  button:active {
-    background: #555;
+  .section-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #aaa;
+  }
+  .sugestao {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .sugestao .card {
+    background: #1a3a2a;
+    border: 1px solid #2d6a4f;
   }
   .grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 12px;
-    margin-top: 20px;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
   }
   .card {
-    background: #222;
-    padding: 15px;
+    background: #1c1c1c;
+    padding: 12px;
     border-radius: 10px;
     text-align: center;
   }
   .numero {
-    font-size: 26px;
+    font-size: 22px;
     font-weight: bold;
-    margin: 6px 0;
+    margin: 4px 0;
   }
   .pequeno {
-    font-size: 13px;
+    font-size: 12px;
     opacity: 0.7;
+  }
+  .posicao-box {
+    background: #1c1c1c;
+    border-radius: 10px;
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+  .posicao-title {
+    font-weight: bold;
+    margin-bottom: 8px;
+    color: #4cc9f0;
+  }
+  .candidatos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .candidato {
+    background: #2a2a2a;
+    padding: 6px 10px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+  .candidato strong {
+    color: #fff;
   }
 </style>
 </head>
@@ -78,30 +111,39 @@
   <button onclick="previsao()">📊 Atualizar análise</button>
   <button onclick="backtest()">🧪 Testar estratégia</button>
 
-  <div class="grid" id="resultados"></div>
+  <!-- SUGESTÃO DE JOGO -->
+  <div class="section" id="secao-sugestao" style="display:none;">
+    <div class="section-title">🎯 SUGESTÃO DE JOGO (próximo sorteio)</div>
+    <div class="sugestao" id="sugestao"></div>
+  </div>
+
+  <!-- RANKING GERAL -->
+  <div class="section" id="secao-geral" style="display:none;">
+    <div class="section-title">📈 RANKING GERAL (Top 15)</div>
+    <div class="grid" id="ranking-geral"></div>
+  </div>
+
+  <!-- POR POSIÇÃO -->
+  <div class="section" id="secao-posicao" style="display:none;">
+    <div class="section-title">🔢 RANKING POR POSIÇÃO</div>
+    <div id="por-posicao"></div>
+  </div>
+
+  <!-- RESULTADOS RECENTES (quando não está em modo previsão) -->
+  <div class="section" id="secao-resultados">
+    <div class="grid" id="resultados"></div>
+  </div>
 </div>
 
 <script>
-/*
- * COLOQUE A URL DO SEU GOOGLE APPS SCRIPT
- * depois de publicar como Web App (Executar como: Eu / Acesso: Qualquer pessoa)
- */
 const API = 'https://script.google.com/macros/s/AKfycbwTGOPfILZKZcb36qioFeusblOE_7LRcAUNfq6tOmkpWgYRI0LHaroIkrSbyIiSn47M/exec';
 
 async function api(action) {
   const url = API + '?action=' + encodeURIComponent(action);
   const resposta = await fetch(url);
-
-  if (!resposta.ok) {
-    throw new Error('Erro HTTP ' + resposta.status);
-  }
-
+  if (!resposta.ok) throw new Error('Erro HTTP ' + resposta.status);
   const json = await resposta.json();
-
-  if (json.sucesso === false) {
-    throw new Error(json.erro || 'Erro desconhecido na API');
-  }
-
+  if (json.sucesso === false) throw new Error(json.erro || 'Erro na API');
   return json;
 }
 
@@ -121,8 +163,7 @@ async function coletar() {
   try {
     const r = await api('coletar');
     mostrar(
-      'Coleta concluída.<br>' +
-      'Encontrados: ' + (r.encontrados || 0) +
+      'Coleta concluída.<br>Encontrados: ' + (r.encontrados || 0) +
       '<br>Gravados: ' + (r.gravados || 0)
     );
     carregar();
@@ -134,6 +175,7 @@ async function coletar() {
 async function carregar() {
   try {
     const r = await api('resultados');
+    esconderPrevisao();
     const div = document.getElementById('resultados');
     div.innerHTML = '';
 
@@ -154,41 +196,77 @@ async function carregar() {
       });
     });
   } catch (e) {
-    mostrar('Erro ao carregar resultados: ' + e.message);
+    mostrar('Erro ao carregar: ' + e.message);
   }
 }
 
 async function previsao() {
-  mostrar('Calculando análise...');
+  mostrar('Calculando análise completa...');
   try {
     const r = await api('previsao');
-    mostrar('Análise atualizada.<br>Confira os candidatos abaixo.');
-    carregarPrevisao(r.previsoes || []);
+    mostrar('Análise atualizada.<br>Confira a sugestão e os rankings abaixo.');
+    mostrarPrevisao(r);
   } catch (e) {
     mostrar('Erro: ' + e.message);
   }
 }
 
-function carregarPrevisao(previsoes) {
-  const div = document.getElementById('resultados');
-  div.innerHTML = '';
+function mostrarPrevisao(r) {
+  // Esconde resultados antigos
+  document.getElementById('secao-resultados').style.display = 'none';
 
-  if (!previsoes.length) {
-    div.innerHTML = '<div class="card">Nenhuma previsão disponível.</div>';
-    return;
-  }
-
-  previsoes.forEach(p => {
+  // ===== SUGESTÃO DE JOGO =====
+  const sugDiv = document.getElementById('sugestao');
+  sugDiv.innerHTML = '';
+  (r.sugestao || []).forEach((num, i) => {
     const card = document.createElement('div');
     card.className = 'card';
     card.innerHTML =
-      '<div class="pequeno">Posição ' + (p.posicao || '-') + '</div>' +
-      '<div class="numero">' + (p.candidato || '-') + '</div>' +
-      '<div class="pequeno">Score: ' + (p.pontuacao ?? '-') + '</div>' +
-      '<div class="pequeno">Freq.: ' + (p.frequencia ?? '-') + '</div>' +
-      '<div class="pequeno">Atraso: ' + (p.atraso ?? '-') + '</div>';
-    div.appendChild(card);
+      '<div class="pequeno">Pos ' + (i + 1) + '</div>' +
+      '<div class="numero">' + num + '</div>';
+    sugDiv.appendChild(card);
   });
+  document.getElementById('secao-sugestao').style.display = 'block';
+
+  // ===== RANKING GERAL =====
+  const geralDiv = document.getElementById('ranking-geral');
+  geralDiv.innerHTML = '';
+  (r.ranking_geral || []).forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML =
+      '<div class="pequeno">#' + (i + 1) + '</div>' +
+      '<div class="numero">' + p.candidato + '</div>' +
+      '<div class="pequeno">Score: ' + p.pontuacao + '</div>' +
+      '<div class="pequeno">Freq: ' + p.frequencia + ' | Atraso: ' + p.atraso + '</div>';
+    geralDiv.appendChild(card);
+  });
+  document.getElementById('secao-geral').style.display = 'block';
+
+  // ===== POR POSIÇÃO =====
+  const posDiv = document.getElementById('por-posicao');
+  posDiv.innerHTML = '';
+  (r.por_posicao || []).forEach(item => {
+    const box = document.createElement('div');
+    box.className = 'posicao-box';
+
+    let html = '<div class="posicao-title">Posição ' + item.posicao + '</div><div class="candidatos">';
+    (item.candidatos || []).forEach(c => {
+      html += '<div class="candidato"><strong>' + c.candidato + '</strong> · ' +
+              c.pontuacao + ' pts · F:' + c.frequencia + ' A:' + c.atraso + '</div>';
+    });
+    html += '</div>';
+    box.innerHTML = html;
+    posDiv.appendChild(box);
+  });
+  document.getElementById('secao-posicao').style.display = 'block';
+}
+
+function esconderPrevisao() {
+  document.getElementById('secao-sugestao').style.display = 'none';
+  document.getElementById('secao-geral').style.display = 'none';
+  document.getElementById('secao-posicao').style.display = 'none';
+  document.getElementById('secao-resultados').style.display = 'block';
 }
 
 async function backtest() {
