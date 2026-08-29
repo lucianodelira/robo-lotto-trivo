@@ -2,258 +2,426 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>Lotto Trivo Analyzer</title>
 <style>
-  * { box-sizing: border-box; }
+  :root {
+    --bg: #080c12; --card: #121820; --card-hover: #1a222d; --border: #1e2a3a;
+    --text: #eef3f9; --muted: #8b9bb4; --primary: #3b82f6; --success: #10b981;
+    --danger: #ef4444; --accent: #22d3ee; --green-border: #1a4d35;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 16px;
-    background: #0f0f0f;
-    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh; line-height: 1.45;
   }
-  .container { max-width: 1000px; margin: auto; }
-  h1 { text-align: center; margin-bottom: 8px; }
+  .app { max-width: 980px; margin: 0 auto; padding: 16px 14px 50px; }
+  .header { text-align: center; padding: 10px 0 16px; }
+  .logo { font-size: 12px; letter-spacing: 3px; color: var(--muted); font-weight: 600; margin-bottom: 4px; }
+  h1 {
+    font-size: 28px; font-weight: 800;
+    background: linear-gradient(135deg, #60a5fa, #22d3ee);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  }
   .status {
-    padding: 14px;
-    border-radius: 10px;
-    background: #1c1c1c;
-    margin-bottom: 14px;
-    line-height: 1.45;
-    font-size: 14px;
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 13px 16px; margin-bottom: 14px; font-size: 13px;
+    display: flex; align-items: center; gap: 10px;
   }
-  button {
-    width: 100%;
-    padding: 14px;
-    margin: 5px 0;
-    border: 0;
-    border-radius: 8px;
-    font-size: 15px;
-    cursor: pointer;
-    background: #2a2a2a;
-    color: #fff;
+  .status .dot {
+    width: 9px; height: 9px; border-radius: 50%; background: var(--success);
+    flex-shrink: 0; box-shadow: 0 0 8px var(--success);
   }
-  button:hover { background: #3a3a3a; }
-  .section {
-    margin-top: 22px;
+  .status.error .dot { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
+  .nav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
+  @media (max-width: 520px) { .nav { grid-template-columns: repeat(2, 1fr); } }
+  .nav-btn {
+    border: 1px solid var(--border); background: var(--card); color: var(--text);
+    border-radius: 12px; padding: 12px 8px; font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; text-align: center;
   }
-  .section-title {
-    font-size: 16px;
-    font-weight: bold;
-    margin-bottom: 10px;
-    color: #aaa;
+  .nav-btn:hover { background: var(--card-hover); }
+  .nav-btn.active {
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    border-color: transparent; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
   }
-  .sugestao {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 8px;
-    margin-bottom: 8px;
+  .actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
+  @media (max-width: 520px) { .actions { grid-template-columns: 1fr; } }
+  .btn {
+    border: none; border-radius: 12px; padding: 13px 12px; font-size: 13px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+    transition: all 0.2s; color: #fff;
   }
-  .sugestao .card {
-    background: #1a3a2a;
-    border: 1px solid #2d6a4f;
+  .btn-primary {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
   }
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
-    gap: 10px;
+  .btn-secondary { background: var(--card); border: 1px solid var(--border); }
+  .btn:active { transform: scale(0.98); }
+  .subnav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+  @media (max-width: 520px) { .subnav { grid-template-columns: repeat(2, 1fr); } }
+  .sub-btn {
+    border: 1px solid var(--border); background: #0f1520; color: var(--muted);
+    border-radius: 10px; padding: 11px 6px; font-size: 12px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s;
   }
+  .sub-btn:hover { color: var(--text); background: var(--card); }
+  .sub-btn.active { color: #fff; border-color: transparent; }
+  .sub-btn.active.milhar  { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+  .sub-btn.active.centena { background: linear-gradient(135deg, #0891b2, #0e7490); }
+  .sub-btn.active.dezena  { background: linear-gradient(135deg, #d97706, #b45309); }
+  .sub-btn.active.grupo   { background: linear-gradient(135deg, #059669, #047857); }
+  .panel { display: none; }
+  .panel.active { display: block; }
+  .section { margin-bottom: 22px; }
+  .section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+  .section-title { font-size: 15px; font-weight: 700; }
+  .section-badge { font-size: 11px; background: #1e293b; color: var(--muted); padding: 3px 8px; border-radius: 20px; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .sugestao-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
   .card {
-    background: #1c1c1c;
-    padding: 12px;
-    border-radius: 10px;
-    text-align: center;
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 10px; text-align: center;
   }
-  .numero {
-    font-size: 22px;
-    font-weight: bold;
-    margin: 4px 0;
+  .card .rank { font-size: 11px; color: var(--muted); }
+  .card .num { font-size: 22px; font-weight: 800; margin: 4px 0; }
+  .card .meta { font-size: 11px; color: var(--muted); line-height: 1.4; }
+  .sugestao-card {
+    background: linear-gradient(160deg, #0f2a1f, #0c1f17);
+    border: 1px solid var(--green-border); border-radius: 12px; padding: 12px 6px; text-align: center;
   }
-  .pequeno {
-    font-size: 12px;
-    opacity: 0.7;
+  .sugestao-card .pos { font-size: 11px; color: #6ee7b7; font-weight: 600; }
+  .sugestao-card .num { font-size: 18px; font-weight: 800; }
+  .draw-header {
+    grid-column: 1 / -1; background: #1a2332; border: 1px solid var(--border);
+    border-radius: 10px; padding: 10px 14px; font-size: 13px; color: var(--muted);
   }
-  .posicao-box {
-    background: #1c1c1c;
-    border-radius: 10px;
-    padding: 12px;
-    margin-bottom: 12px;
-  }
-  .posicao-title {
-    font-weight: bold;
-    margin-bottom: 8px;
-    color: #4cc9f0;
-  }
-  .candidatos {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-  .candidato {
-    background: #2a2a2a;
-    padding: 6px 10px;
-    border-radius: 6px;
-    font-size: 13px;
-  }
-  .candidato strong {
-    color: #fff;
-  }
+  .pos-box { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 14px; margin-bottom: 12px; }
+  .pos-title { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+  .candidatos { display: flex; flex-wrap: wrap; gap: 8px; }
+  .candidato { background: #1e293b; border: 1px solid #334155; padding: 7px 11px; border-radius: 8px; font-size: 13px; }
+  .candidato strong { color: #fff; }
+  .candidato span { color: var(--muted); font-size: 12px; }
+  .empty { text-align: center; padding: 36px 16px; color: var(--muted); font-size: 14px; grid-column: 1 / -1; }
+  .card.milhar  { border-color: #5b21b6; }
+  .card.centena { border-color: #0e7490; }
+  .card.dezena  { border-color: #b45309; }
+  .card.grupo   { border-color: #047857; }
+  .card.milhar  .num { color: #c4b5fd; }
+  .card.centena .num { color: #67e8f9; }
+  .card.dezena  .num { color: #fcd34d; }
+  .card.grupo   .num { color: #6ee7b7; }
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>LOTTO TRIVO</h1>
-
-  <div class="status" id="status">Carregando...</div>
-
-  <button onclick="coletar()">🔄 Coletar resultados</button>
-  <button onclick="previsao()">📊 Atualizar análise</button>
-  <button onclick="backtest()">🧪 Testar estratégia</button>
-
-  <!-- SUGESTÃO DE JOGO -->
-  <div class="section" id="secao-sugestao" style="display:none;">
-    <div class="section-title">🎯 SUGESTÃO DE JOGO (próximo sorteio)</div>
-    <div class="sugestao" id="sugestao"></div>
+<div class="app">
+  <div class="header">
+    <div class="logo">ANALYZER</div>
+    <h1>Lotto Trivo</h1>
   </div>
 
-  <!-- RANKING GERAL -->
-  <div class="section" id="secao-geral" style="display:none;">
-    <div class="section-title">📈 RANKING GERAL (Top 15)</div>
-    <div class="grid" id="ranking-geral"></div>
+  <div class="status" id="status">
+    <div class="dot"></div>
+    <div>Carregando sistema...</div>
   </div>
 
-  <!-- POR POSIÇÃO -->
-  <div class="section" id="secao-posicao" style="display:none;">
-    <div class="section-title">🔢 RANKING POR POSIÇÃO</div>
-    <div id="por-posicao"></div>
+  <div class="nav">
+    <button class="nav-btn active" data-panel="painel-inicio" onclick="trocarPainel('painel-inicio', this)">🏠 Início</button>
+    <button class="nav-btn" data-panel="painel-atrasados" onclick="trocarPainel('painel-atrasados', this)">⏳ Atrasados</button>
+    <button class="nav-btn" data-panel="painel-analise" onclick="trocarPainel('painel-analise', this)">📊 Análise</button>
+    <button class="nav-btn" data-panel="painel-resultados" onclick="trocarPainel('painel-resultados', this)">📋 Resultados</button>
   </div>
 
-  <!-- RESULTADOS RECENTES (quando não está em modo previsão) -->
-  <div class="section" id="secao-resultados">
-    <div class="grid" id="resultados"></div>
+  <div class="actions">
+    <button class="btn btn-primary" onclick="coletar()">🔄 Coletar</button>
+    <button class="btn btn-secondary" onclick="previsao()">📊 Análise</button>
+    <button class="btn btn-secondary" onclick="backtest()">🧪 Backtest</button>
+  </div>
+
+  <div class="panel active" id="painel-inicio">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">🎯 Sugestão de Jogo</div>
+        <div class="section-badge">Próximo sorteio</div>
+      </div>
+      <div class="sugestao-grid" id="sugestao">
+        <div class="empty">Toque em <strong>Análise</strong> para gerar a sugestão.</div>
+      </div>
+    </div>
+    <div class="section" id="secao-geral-home" style="display:none;">
+      <div class="section-header">
+        <div class="section-title">📈 Ranking Geral</div>
+        <div class="section-badge">Top 15</div>
+      </div>
+      <div class="grid" id="ranking-geral"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="painel-atrasados">
+    <div class="subnav">
+      <button class="sub-btn milhar active" onclick="mostrarAtrasado('milhar', this)">🎯 Milhar</button>
+      <button class="sub-btn centena" onclick="mostrarAtrasado('centena', this)">🔢 Centena</button>
+      <button class="sub-btn dezena" onclick="mostrarAtrasado('dezena', this)">📶 Dezena</button>
+      <button class="sub-btn grupo" onclick="mostrarAtrasado('grupo', this)">🎲 Grupo</button>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title" id="titulo-atrasado">10 Milhares mais atrasadas</div>
+        <div class="section-badge" id="badge-atrasado">Top 10</div>
+      </div>
+      <div class="grid" id="lista-atrasados">
+        <div class="empty">Carregando...</div>
+      </div>
+    </div>
+    <button class="btn btn-secondary" style="width:100%;margin-top:8px;" onclick="carregarAtrasados(true)">
+      🔄 Atualizar atrasados
+    </button>
+  </div>
+
+  <div class="panel" id="painel-analise">
+    <div class="section">
+      <div class="section-header"><div class="section-title">🎯 Sugestão de Jogo</div></div>
+      <div class="sugestao-grid" id="sugestao-analise">
+        <div class="empty">Toque em <strong>Análise</strong>.</div>
+      </div>
+    </div>
+    <div class="section" id="secao-geral" style="display:none;">
+      <div class="section-header">
+        <div class="section-title">📈 Ranking Geral</div>
+        <div class="section-badge">Top 15</div>
+      </div>
+      <div class="grid" id="ranking-geral-analise"></div>
+    </div>
+    <div class="section" id="secao-posicao" style="display:none;">
+      <div class="section-header"><div class="section-title">🔢 Ranking por Posição</div></div>
+      <div id="por-posicao"></div>
+    </div>
+  </div>
+
+  <div class="panel" id="painel-resultados">
+    <div class="section">
+      <div class="section-header"><div class="section-title">📋 Últimos Resultados</div></div>
+      <div class="grid" id="resultados">
+        <div class="empty">Carregando resultados...</div>
+      </div>
+    </div>
   </div>
 </div>
 
 <script>
 const API = 'https://script.google.com/macros/s/AKfycbwTGOPfILZKZcb36qioFeusblOE_7LRcAUNfq6tOmkpWgYRI0LHaroIkrSbyIiSn47M/exec';
 
+let cacheAtrasados = null;
+let tipoAtrasadoAtual = 'milhar';
+
 async function api(action) {
   const url = API + '?action=' + encodeURIComponent(action);
-  const resposta = await fetch(url);
-  if (!resposta.ok) throw new Error('Erro HTTP ' + resposta.status);
-  const json = await resposta.json();
+  const res = await fetch(url);
+  if (!res.ok) throw new Error('Erro HTTP ' + res.status);
+  const json = await res.json();
   if (json.sucesso === false) throw new Error(json.erro || 'Erro na API');
   return json;
+}
+
+function setStatus(html, isError = false) {
+  const el = document.getElementById('status');
+  el.className = 'status' + (isError ? ' error' : '');
+  el.innerHTML = `<div class="dot"></div><div>${html}</div>`;
+}
+
+function trocarPainel(id, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if (btn) btn.classList.add('active');
+  if (id === 'painel-atrasados') carregarAtrasados();
+  if (id === 'painel-resultados') carregar();
+}
+
+function formatarData(data) {
+  if (!data) return '--/--/----';
+  if (/^\d{4}-\d{2}-\d{2}$/.test(data)) {
+    const [ano, mes, dia] = data.split('-');
+    return `${dia}/${mes}/${ano}`;
+  }
+  try {
+    const d = new Date(data);
+    if (!isNaN(d.getTime()) && d.getFullYear() > 2000) {
+      return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
+    }
+  } catch (e) {}
+  return data;
 }
 
 async function status() {
   try {
     const r = await api('status');
-    document.getElementById('status').innerHTML =
-      '🟢 Sistema online<br>' + (r.hora || '');
+    setStatus(`Sistema online · ${r.hora || ''}`);
   } catch (e) {
-    document.getElementById('status').innerHTML =
-      '🔴 API indisponível<br><small>' + e.message + '</small>';
+    setStatus('API indisponível · ' + e.message, true);
   }
 }
 
 async function coletar() {
-  mostrar('Coletando Lotto Trivo...');
+  setStatus('Coletando hoje + ontem...');
   try {
     const r = await api('coletar');
-    mostrar(
-      'Coleta concluída.<br>Encontrados: ' + (r.encontrados || 0) +
-      '<br>Gravados: ' + (r.gravados || 0)
-    );
+    setStatus(`Coleta concluída · ${r.gravados || 0} registros`);
     carregar();
   } catch (e) {
-    mostrar('Erro: ' + e.message);
+    setStatus('Erro na coleta: ' + e.message, true);
   }
 }
 
 async function carregar() {
   try {
     const r = await api('resultados');
-    esconderPrevisao();
     const div = document.getElementById('resultados');
     div.innerHTML = '';
-
     if (!r.resultados || !r.resultados.length) {
-      div.innerHTML = '<div class="card">Nenhum resultado.</div>';
+      div.innerHTML = '<div class="empty">Nenhum resultado.<br>Toque em <strong>Coletar</strong>.</div>';
       return;
     }
-
+    setStatus(`Mostrando ${r.resultados.length} sorteios recentes`);
     r.resultados.forEach(concurso => {
+      const header = document.createElement('div');
+      header.className = 'draw-header';
+      header.innerHTML = `🕐 ${formatarData(concurso.data)} · ${concurso.hora || ''}`;
+      div.appendChild(header);
       (concurso.numeros || []).forEach((numero, pos) => {
+        if (!numero) return;
         const card = document.createElement('div');
         card.className = 'card';
-        card.innerHTML =
-          '<div class="pequeno">Posição ' + (pos + 1) + '</div>' +
-          '<div class="numero">' + numero + '</div>' +
-          '<div class="pequeno">' + (concurso.data || '') + ' ' + (concurso.hora || '') + '</div>';
+        card.innerHTML = `<div class="rank">Posição ${pos + 1}</div><div class="num">${numero}</div>`;
         div.appendChild(card);
       });
     });
   } catch (e) {
-    mostrar('Erro ao carregar: ' + e.message);
+    setStatus('Erro ao carregar: ' + e.message, true);
   }
 }
 
+async function carregarAtrasados(forcar) {
+  const div = document.getElementById('lista-atrasados');
+  if (!forcar && cacheAtrasados) {
+    renderAtrasados(tipoAtrasadoAtual);
+    return;
+  }
+  div.innerHTML = '<div class="empty">Atualizando atrasados...</div>';
+  setStatus('Calculando Top 10 atrasados...');
+  try {
+    const r = await api('atrasados');
+    cacheAtrasados = {
+      totalSorteios: r.totalSorteios || 0,
+      milhar:  Array.isArray(r.milhar)  ? r.milhar  : [],
+      centena: Array.isArray(r.centena) ? r.centena : [],
+      dezena:  Array.isArray(r.dezena)  ? r.dezena  : [],
+      grupo:   Array.isArray(r.grupo)   ? r.grupo   : []
+    };
+    setStatus(`Atrasados atualizados · ${cacheAtrasados.totalSorteios} sorteios`);
+    renderAtrasados(tipoAtrasadoAtual);
+  } catch (e) {
+    div.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
+    setStatus('Erro ao carregar atrasados', true);
+  }
+}
+
+function mostrarAtrasado(tipo, btn) {
+  tipoAtrasadoAtual = tipo;
+  document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  if (!cacheAtrasados) {
+    carregarAtrasados(true);
+    return;
+  }
+  renderAtrasados(tipo);
+}
+
+function renderAtrasados(tipo) {
+  const div = document.getElementById('lista-atrasados');
+  const titulo = document.getElementById('titulo-atrasado');
+  const badge = document.getElementById('badge-atrasado');
+  const labels = {
+    milhar: '10 Milhares mais atrasadas',
+    centena: '10 Centenas mais atrasadas',
+    dezena: '10 Dezenas mais atrasadas',
+    grupo: '10 Grupos mais atrasados'
+  };
+  titulo.textContent = labels[tipo] || 'Atrasados';
+  badge.textContent = 'Top 10';
+  div.innerHTML = '';
+
+  if (!cacheAtrasados) {
+    div.innerHTML = '<div class="empty">Carregando...</div>';
+    return;
+  }
+
+  const lista = cacheAtrasados[tipo] || [];
+  if (!lista.length) {
+    div.innerHTML = `<div class="empty">Nenhum dado de <strong>${tipo}</strong>.<br>Clique em <strong>Atualizar atrasados</strong>.</div>`;
+    return;
+  }
+
+  lista.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'card ' + tipo;
+    card.innerHTML = `
+      <div class="rank">#${item.posicao}</div>
+      <div class="num">${item.valor}</div>
+      <div class="meta">Atraso: ${item.atraso} sorteios<br>Freq: ${item.frequencia}<br>${item.ultimo_numero || ''}</div>`;
+    div.appendChild(card);
+  });
+}
+
 async function previsao() {
-  mostrar('Calculando análise completa...');
+  setStatus('Calculando análise...');
   try {
     const r = await api('previsao');
-    mostrar('Análise atualizada.<br>Confira a sugestão e os rankings abaixo.');
+    setStatus('Análise atualizada');
     mostrarPrevisao(r);
+    trocarPainel('painel-analise', document.querySelector('[data-panel="painel-analise"]'));
   } catch (e) {
-    mostrar('Erro: ' + e.message);
+    setStatus('Erro na análise: ' + e.message, true);
   }
 }
 
 function mostrarPrevisao(r) {
-  // Esconde resultados antigos
-  document.getElementById('secao-resultados').style.display = 'none';
-
-  // ===== SUGESTÃO DE JOGO =====
-  const sugDiv = document.getElementById('sugestao');
-  sugDiv.innerHTML = '';
-  (r.sugestao || []).forEach((num, i) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML =
-      '<div class="pequeno">Pos ' + (i + 1) + '</div>' +
-      '<div class="numero">' + num + '</div>';
-    sugDiv.appendChild(card);
+  ['sugestao', 'sugestao-analise'].forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.innerHTML = '';
+    (r.sugestao || []).forEach((num, i) => {
+      const card = document.createElement('div');
+      card.className = 'sugestao-card';
+      card.innerHTML = `<div class="pos">Pos ${i + 1}</div><div class="num">${num}</div>`;
+      el.appendChild(card);
+    });
   });
-  document.getElementById('secao-sugestao').style.display = 'block';
 
-  // ===== RANKING GERAL =====
-  const geralDiv = document.getElementById('ranking-geral');
-  geralDiv.innerHTML = '';
-  (r.ranking_geral || []).forEach((p, i) => {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML =
-      '<div class="pequeno">#' + (i + 1) + '</div>' +
-      '<div class="numero">' + p.candidato + '</div>' +
-      '<div class="pequeno">Score: ' + p.pontuacao + '</div>' +
-      '<div class="pequeno">Freq: ' + p.frequencia + ' | Atraso: ' + p.atraso + '</div>';
-    geralDiv.appendChild(card);
+  [document.getElementById('ranking-geral'), document.getElementById('ranking-geral-analise')].forEach(el => {
+    if (!el) return;
+    el.innerHTML = '';
+    (r.ranking_geral || []).forEach((p, i) => {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `<div class="rank">#${i + 1}</div><div class="num">${p.candidato}</div>
+        <div class="meta">Score ${p.pontuacao}<br>F ${p.frequencia} · A ${p.atraso}</div>`;
+      el.appendChild(card);
+    });
   });
+
+  document.getElementById('secao-geral-home').style.display = 'block';
   document.getElementById('secao-geral').style.display = 'block';
 
-  // ===== POR POSIÇÃO =====
   const posDiv = document.getElementById('por-posicao');
   posDiv.innerHTML = '';
   (r.por_posicao || []).forEach(item => {
     const box = document.createElement('div');
-    box.className = 'posicao-box';
-
-    let html = '<div class="posicao-title">Posição ' + item.posicao + '</div><div class="candidatos">';
+    box.className = 'pos-box';
+    let html = `<div class="pos-title">Posição ${item.posicao}</div><div class="candidatos">`;
     (item.candidatos || []).forEach(c => {
-      html += '<div class="candidato"><strong>' + c.candidato + '</strong> · ' +
-              c.pontuacao + ' pts · F:' + c.frequencia + ' A:' + c.atraso + '</div>';
+      html += `<div class="candidato"><strong>${c.candidato}</strong>
+        <span> · ${c.pontuacao} · F${c.frequencia} A${c.atraso}</span></div>`;
     });
     html += '</div>';
     box.innerHTML = html;
@@ -262,33 +430,16 @@ function mostrarPrevisao(r) {
   document.getElementById('secao-posicao').style.display = 'block';
 }
 
-function esconderPrevisao() {
-  document.getElementById('secao-sugestao').style.display = 'none';
-  document.getElementById('secao-geral').style.display = 'none';
-  document.getElementById('secao-posicao').style.display = 'none';
-  document.getElementById('secao-resultados').style.display = 'block';
-}
-
 async function backtest() {
-  mostrar('Executando backtest...');
+  setStatus('Executando backtest...');
   try {
     const r = await api('backtest');
-    mostrar(
-      '🧪 BACKTEST<br><br>' +
-      'Testes: ' + (r.testes || 0) + '<br>' +
-      'Acertos Top 10: ' + (r.acertos || 0) + '<br>' +
-      'Taxa: ' + (r.taxa_acerto_top10 || 0) + '%'
-    );
+    setStatus(`Backtest · ${r.testes || 0} testes · ${r.acertos_top10 || r.acertos || 0} acertos · ${r.taxa_top10 || r.taxa_acerto_top10 || 0}%`);
   } catch (e) {
-    mostrar('Erro no backtest: ' + e.message);
+    setStatus('Erro no backtest: ' + e.message, true);
   }
 }
 
-function mostrar(texto) {
-  document.getElementById('status').innerHTML = texto;
-}
-
-// Inicialização
 status();
 carregar();
 </script>
