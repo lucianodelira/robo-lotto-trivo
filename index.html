@@ -33,7 +33,6 @@
     flex-shrink: 0; box-shadow: 0 0 8px var(--success);
   }
   .status.error .dot { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
-
   .nav { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px; }
   @media (max-width: 640px) { .nav { grid-template-columns: repeat(3, 1fr); } }
   .nav-btn {
@@ -46,10 +45,8 @@
     background: linear-gradient(135deg, #1d4ed8, #2563eb);
     border-color: transparent; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
   }
-
   .actions { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 18px; }
   @media (max-width: 520px) { .actions { grid-template-columns: 1fr; } }
-
   .btn {
     border: none; border-radius: 12px; padding: 13px 12px; font-size: 13px; font-weight: 600;
     cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
@@ -61,7 +58,6 @@
   }
   .btn-secondary { background: var(--card); border: 1px solid var(--border); color: #fff; }
   .btn:active { transform: scale(0.98); }
-
   .subnav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
   @media (max-width: 520px) { .subnav { grid-template-columns: repeat(2, 1fr); } }
   .sub-btn {
@@ -75,17 +71,14 @@
   .sub-btn.active.centena { background: linear-gradient(135deg, #0891b2, #0e7490); }
   .sub-btn.active.dezena  { background: linear-gradient(135deg, #d97706, #b45309); }
   .sub-btn.active.grupo   { background: linear-gradient(135deg, #059669, #047857); }
-
   .panel { display: none; }
   .panel.active { display: block; }
   .section { margin-bottom: 22px; }
   .section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
   .section-title { font-size: 15px; font-weight: 700; }
   .section-badge { font-size: 11px; background: #1e293b; color: var(--muted); padding: 3px 8px; border-radius: 20px; }
-
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
   .sugestao-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-
   .card {
     background: var(--card); border: 1px solid var(--border); border-radius: 12px;
     padding: 14px 10px; text-align: center;
@@ -93,14 +86,12 @@
   .card .rank { font-size: 11px; color: var(--muted); }
   .card .num { font-size: 22px; font-weight: 800; margin: 4px 0; }
   .card .meta { font-size: 11px; color: var(--muted); line-height: 1.4; }
-
   .sugestao-card {
     background: linear-gradient(160deg, #0f2a1f, #0c1f17);
     border: 1px solid var(--green-border); border-radius: 12px; padding: 12px 6px; text-align: center;
   }
   .sugestao-card .pos { font-size: 11px; color: #6ee7b7; font-weight: 600; }
   .sugestao-card .num { font-size: 18px; font-weight: 800; }
-
   .draw-header {
     grid-column: 1 / -1; background: #1a2332; border: 1px solid var(--border);
     border-radius: 10px; padding: 10px 14px; font-size: 13px; color: var(--muted);
@@ -112,7 +103,6 @@
   .candidato strong { color: #fff; }
   .candidato span { color: var(--muted); font-size: 12px; }
   .empty { text-align: center; padding: 36px 16px; color: var(--muted); font-size: 14px; grid-column: 1 / -1; }
-
   .card.milhar  { border-color: #5b21b6; }
   .card.centena { border-color: #0e7490; }
   .card.dezena  { border-color: #b45309; }
@@ -121,7 +111,6 @@
   .card.centena .num { color: #67e8f9; }
   .card.dezena  .num { color: #fcd34d; }
   .card.grupo   .num { color: #6ee7b7; }
-
   .bar-row { display: grid; grid-template-columns: 90px 1fr 48px; align-items: center; gap: 10px; margin-bottom: 10px; }
   .bar-label { font-size: 12px; font-weight: 600; color: var(--muted); }
   .bar-track { height: 16px; background: #1a2332; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
@@ -132,7 +121,6 @@
   .bar-fill.grupo    { background: linear-gradient(90deg, #059669, #6ee7b7); }
   .bar-fill.sugestao { background: linear-gradient(90deg, #2563eb, #60a5fa); }
   .bar-pct { font-size: 12px; font-weight: 700; text-align: right; }
-
   .hist-card {
     background: var(--card); border: 1px solid var(--border);
     border-radius: 12px; padding: 12px; margin-bottom: 10px; text-align: left;
@@ -247,7 +235,7 @@
     <div class="section">
       <div class="section-header">
         <div class="section-title">✅ Acertos × Último sorteio</div>
-        <div class="section-badge">Atrasados + Sugestão</div>
+        <div class="section-badge">Atrasados + Sugestão salva</div>
       </div>
       <button class="btn btn-primary" style="width:100%;margin-bottom:10px;" onclick="verificarAcertos()">
         🔍 Verificar agora
@@ -308,6 +296,7 @@ function trocarPainel(id, btn) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if (btn) btn.classList.add('active');
+
   if (id === 'painel-atrasados') carregarAtrasados();
   if (id === 'painel-resultados') carregar();
   if (id === 'painel-acertos') carregarHistoricoPrevisoes();
@@ -353,16 +342,20 @@ async function carregar() {
     const r = await api('resultados');
     const div = document.getElementById('resultados');
     div.innerHTML = '';
+
     if (!r.resultados || !r.resultados.length) {
       div.innerHTML = '<div class="empty">Nenhum resultado.<br>Toque em <strong>Coletar</strong>.</div>';
       return;
     }
+
     setStatus(`Mostrando ${r.resultados.length} sorteios recentes`);
+
     r.resultados.forEach(concurso => {
       const header = document.createElement('div');
       header.className = 'draw-header';
       header.innerHTML = `🕐 ${formatarData(concurso.data)} · ${concurso.hora || ''}`;
       div.appendChild(header);
+
       (concurso.numeros || []).forEach((numero, pos) => {
         if (!numero) return;
         const card = document.createElement('div');
@@ -382,8 +375,10 @@ async function carregarAtrasados(forcar) {
     renderAtrasados(tipoAtrasadoAtual);
     return;
   }
+
   div.innerHTML = '<div class="empty">Atualizando atrasados...</div>';
   setStatus('Calculando Top 10 atrasados...');
+
   try {
     const r = await api('atrasados');
     cacheAtrasados = {
@@ -405,6 +400,7 @@ function mostrarAtrasado(tipo, btn) {
   tipoAtrasadoAtual = tipo;
   document.querySelectorAll('.sub-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
+
   if (!cacheAtrasados) {
     carregarAtrasados(true);
     return;
@@ -416,24 +412,29 @@ function renderAtrasados(tipo) {
   const div = document.getElementById('lista-atrasados');
   const titulo = document.getElementById('titulo-atrasado');
   const badge = document.getElementById('badge-atrasado');
+
   const labels = {
     milhar: '10 Milhares mais atrasadas',
     centena: '10 Centenas mais atrasadas',
     dezena: '10 Dezenas mais atrasadas',
     grupo: '10 Grupos mais atrasados'
   };
+
   titulo.textContent = labels[tipo] || 'Atrasados';
   badge.textContent = 'Top 10';
   div.innerHTML = '';
+
   if (!cacheAtrasados) {
     div.innerHTML = '<div class="empty">Carregando...</div>';
     return;
   }
+
   const lista = cacheAtrasados[tipo] || [];
   if (!lista.length) {
     div.innerHTML = `<div class="empty">Nenhum dado de <strong>${tipo}</strong>.<br>Clique em <strong>Atualizar atrasados</strong>.</div>`;
     return;
   }
+
   lista.forEach(item => {
     const card = document.createElement('div');
     card.className = 'card ' + tipo;
@@ -506,7 +507,7 @@ async function backtest() {
   setStatus('Executando backtest...');
   try {
     const r = await api('backtest');
-    setStatus(`Backtest · ${r.testes || 0} testes · ${r.acertos_top10 || r.acertos || 0} acertos · ${r.taxa_top10 || r.taxa_acerto_top10 || 0}%`);
+    setStatus(`Backtest · ${r.testes || 0} testes · ${r.acertos || 0} acertos · ${r.taxa_acerto_top10 || 0}%`);
   } catch (e) {
     setStatus('Erro no backtest: ' + e.message, true);
   }
@@ -535,8 +536,10 @@ async function carregarHistoricoPrevisoes() {
   const box = document.getElementById('lista-historico-prev');
   const chart = document.getElementById('chart-taxas');
   if (box) box.innerHTML = '<div class="empty">Carregando...</div>';
+
   try {
     const r = await api('historico_previsoes');
+
     if (chart) chart.innerHTML = renderBarrasTaxas(r.taxas || {});
     const badge = document.getElementById('badge-taxas');
     if (badge) badge.textContent = (r.fechados || 0) + ' fechadas';
@@ -552,13 +555,14 @@ async function carregarHistoricoPrevisoes() {
       const st = it.status === 'FECHADO'
         ? '<span class="badge-ok">FECHADO</span>'
         : '<span class="badge-pend">' + (it.status || 'PENDENTE') + '</span>';
+
       const div = document.createElement('div');
       div.className = 'hist-card';
       div.innerHTML = `
         <div class="title">${st} · ${it.criado || it.id || ''}</div>
         <div class="meta">
           ${it.sorteio && it.sorteio.data
-            ? `Sorteio: ${it.sorteio.data} ${it.sorteio.hora || ''}<br>Números: ${(it.sorteio.numeros || []).join(' ')}<br>`
+            ? `Sorteio: ${formatarData(it.sorteio.data)} ${it.sorteio.hora || ''}<br>Números: ${(it.sorteio.numeros || []).join(' ')}<br>`
             : 'Aguardando sorteio<br>'}
           Acertos → M:${ac.milhar || 0} C:${ac.centena || 0} D:${ac.dezena || 0} G:${ac.grupo || 0}
           · Sug M:${ac.sugestao || 0} / C:${ac.sugestao_centena || 0}
@@ -576,7 +580,11 @@ async function salvarPrevisaoAgora() {
   setStatus('Salvando previsão (atrasados + sugestão)...');
   try {
     const r = await api('salvar_previsao');
-    setStatus(r.sucesso ? ('Previsão salva: ' + (r.idPrev || 'ok')) : 'Falha ao salvar previsão');
+    if (r.sucesso) {
+      setStatus('Previsão salva com sucesso · ID: ' + (r.idPrev || 'ok'));
+    } else {
+      setStatus('Falha ao salvar previsão', true);
+    }
     carregarHistoricoPrevisoes();
   } catch (e) {
     setStatus('Erro ao salvar: ' + e.message, true);
@@ -586,17 +594,16 @@ async function salvarPrevisaoAgora() {
 async function verificarAcertos() {
   const box = document.getElementById('box-acertos');
   box.innerHTML = '<div class="empty">Verificando...</div>';
-  setStatus('Comparando atrasados com o último sorteio...');
+  setStatus('Comparando atrasados + sugestão salva com o último sorteio...');
 
   try {
     try { await api('coletar'); } catch (e) {}
 
     const r = await api('verificar');
 
-    // Compatível com resposta plana ou aninhada
-    const sorteio = r.sorteio || (r.verificacao && r.verificacao.sorteio) || null;
-    const s = r.resumo || (r.verificacao && r.verificacao.resumo) || {};
-    const ac = r.acertos || (r.verificacao && r.verificacao.acertos) || {};
+    const sorteio = r.sorteio || null;
+    const s = r.resumo || {};
+    const ac = r.acertos || {};
 
     if (!sorteio) {
       box.innerHTML = '<div class="empty">Nenhum sorteio encontrado. Colete resultados.</div>';
@@ -604,12 +611,18 @@ async function verificarAcertos() {
     }
 
     let html = '';
-    html += `<div class="draw-header">🕐 ${sorteio.data || formatarData(sorteio.data)} · ${sorteio.hora || ''} · ID ${sorteio.id || ''}</div>`;
+    html += `<div class="draw-header">🕐 ${formatarData(sorteio.data)} · ${sorteio.hora || ''} · ID ${sorteio.id || ''}</div>`;
     html += `<div class="draw-header" style="margin-top:8px;">
       Fonte: <strong>${r.fonte || '-'}</strong>
       ${r.snapshotEm ? ' · ' + r.snapshotEm : ''}
       ${r.totalSorteiosAnalisados ? ' · Base: ' + r.totalSorteiosAnalisados + ' sorteios' : ''}
     </div>`;
+
+    if (r.sugestao_comparada && r.sugestao_comparada.length) {
+      html += `<div class="draw-header" style="margin-top:8px;color:#6ee7b7;">
+        Sugestão usada no fechamento: <strong>${r.sugestao_comparada.join(' ')}</strong>
+      </div>`;
+    }
 
     html += `<div class="grid" style="margin:12px 0;">`;
     (sorteio.numeros || []).forEach((n, i) => {
@@ -669,7 +682,6 @@ async function verificarAcertos() {
         : 'Nenhum acerto neste sorteio'
     );
 
-    // Atualiza gráfico e lista
     carregarHistoricoPrevisoes();
   } catch (e) {
     box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
@@ -677,6 +689,7 @@ async function verificarAcertos() {
   }
 }
 
+// Inicialização
 status();
 carregar();
 </script>
