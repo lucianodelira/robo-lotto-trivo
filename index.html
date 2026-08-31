@@ -36,7 +36,6 @@
 
   .nav { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px; }
   @media (max-width: 640px) { .nav { grid-template-columns: repeat(3, 1fr); } }
-
   .nav-btn {
     border: 1px solid var(--border); background: var(--card); color: var(--text);
     border-radius: 12px; padding: 12px 6px; font-size: 11px; font-weight: 600;
@@ -60,7 +59,7 @@
     background: linear-gradient(135deg, #3b82f6, #2563eb);
     box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
   }
-  .btn-secondary { background: var(--card); border: 1px solid var(--border); }
+  .btn-secondary { background: var(--card); border: 1px solid var(--border); color: #fff; }
   .btn:active { transform: scale(0.98); }
 
   .subnav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
@@ -83,8 +82,10 @@
   .section-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
   .section-title { font-size: 15px; font-weight: 700; }
   .section-badge { font-size: 11px; background: #1e293b; color: var(--muted); padding: 3px 8px; border-radius: 20px; }
+
   .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
   .sugestao-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+
   .card {
     background: var(--card); border: 1px solid var(--border); border-radius: 12px;
     padding: 14px 10px; text-align: center;
@@ -92,12 +93,14 @@
   .card .rank { font-size: 11px; color: var(--muted); }
   .card .num { font-size: 22px; font-weight: 800; margin: 4px 0; }
   .card .meta { font-size: 11px; color: var(--muted); line-height: 1.4; }
+
   .sugestao-card {
     background: linear-gradient(160deg, #0f2a1f, #0c1f17);
     border: 1px solid var(--green-border); border-radius: 12px; padding: 12px 6px; text-align: center;
   }
   .sugestao-card .pos { font-size: 11px; color: #6ee7b7; font-weight: 600; }
   .sugestao-card .num { font-size: 18px; font-weight: 800; }
+
   .draw-header {
     grid-column: 1 / -1; background: #1a2332; border: 1px solid var(--border);
     border-radius: 10px; padding: 10px 14px; font-size: 13px; color: var(--muted);
@@ -109,6 +112,7 @@
   .candidato strong { color: #fff; }
   .candidato span { color: var(--muted); font-size: 12px; }
   .empty { text-align: center; padding: 36px 16px; color: var(--muted); font-size: 14px; grid-column: 1 / -1; }
+
   .card.milhar  { border-color: #5b21b6; }
   .card.centena { border-color: #0e7490; }
   .card.dezena  { border-color: #b45309; }
@@ -117,6 +121,26 @@
   .card.centena .num { color: #67e8f9; }
   .card.dezena  .num { color: #fcd34d; }
   .card.grupo   .num { color: #6ee7b7; }
+
+  .bar-row { display: grid; grid-template-columns: 90px 1fr 48px; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .bar-label { font-size: 12px; font-weight: 600; color: var(--muted); }
+  .bar-track { height: 16px; background: #1a2332; border-radius: 10px; overflow: hidden; border: 1px solid var(--border); }
+  .bar-fill { height: 100%; border-radius: 10px; }
+  .bar-fill.milhar   { background: linear-gradient(90deg, #7c3aed, #a78bfa); }
+  .bar-fill.centena  { background: linear-gradient(90deg, #0891b2, #67e8f9); }
+  .bar-fill.dezena   { background: linear-gradient(90deg, #d97706, #fcd34d); }
+  .bar-fill.grupo    { background: linear-gradient(90deg, #059669, #6ee7b7); }
+  .bar-fill.sugestao { background: linear-gradient(90deg, #2563eb, #60a5fa); }
+  .bar-pct { font-size: 12px; font-weight: 700; text-align: right; }
+
+  .hist-card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px; margin-bottom: 10px; text-align: left;
+  }
+  .hist-card .title { font-size: 13px; font-weight: 700; margin-bottom: 6px; }
+  .hist-card .meta { font-size: 12px; color: var(--muted); line-height: 1.5; }
+  .badge-ok { color: #6ee7b7; }
+  .badge-pend { color: #fcd34d; }
 </style>
 </head>
 <body>
@@ -225,18 +249,41 @@
         <div class="section-title">✅ Acertos × Último sorteio</div>
         <div class="section-badge">Atrasados + Sugestão</div>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-bottom:16px;" onclick="verificarAcertos()">
+      <button class="btn btn-primary" style="width:100%;margin-bottom:10px;" onclick="verificarAcertos()">
         🔍 Verificar agora
       </button>
+      <button class="btn btn-secondary" style="width:100%;margin-bottom:16px;" onclick="salvarPrevisaoAgora()">
+        💾 Salvar previsão (antes do próximo)
+      </button>
       <div id="box-acertos">
-        <div class="empty">Toque em <strong>Verificar agora</strong> após o sorteio sair (e após Coletar).</div>
+        <div class="empty">Toque em <strong>Verificar agora</strong> após o sorteio.</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">📈 Taxa de acerto (últimas previsões)</div>
+        <div class="section-badge" id="badge-taxas">—</div>
+      </div>
+      <div id="chart-taxas"></div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">🕘 Últimas 10 previsões</div>
+      </div>
+      <button class="btn btn-secondary" style="width:100%;margin-bottom:12px;" onclick="carregarHistoricoPrevisoes()">
+        🔄 Atualizar histórico
+      </button>
+      <div id="lista-historico-prev">
+        <div class="empty">Salve uma previsão antes do sorteio e verifique depois.</div>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-const API = 'https://script.google.com/macros/s/AKfycbwTGOPfILZKZcb36qioFeusblOE_7LRcAUNfq6tOmkpWgYRI0LHaroIkrSbyIiSn47M/exec';
+const API = 'https://script.google.com/macros/s/AKfycbzGIW0eNOdzt7wFhtUGM116CFgWM-THQwHop0-wRv5n0SKSU1eOqqARNX8Wy3SUPl61/exec';
 
 let cacheAtrasados = null;
 let tipoAtrasadoAtual = 'milhar';
@@ -263,6 +310,7 @@ function trocarPainel(id, btn) {
   if (btn) btn.classList.add('active');
   if (id === 'painel-atrasados') carregarAtrasados();
   if (id === 'painel-resultados') carregar();
+  if (id === 'painel-acertos') carregarHistoricoPrevisoes();
 }
 
 function formatarData(data) {
@@ -464,27 +512,99 @@ async function backtest() {
   }
 }
 
+/* ===== ACERTOS + HISTÓRICO ===== */
+function renderBarrasTaxas(taxas) {
+  const items = [
+    { label: 'Milhar', pct: taxas.milhar || 0, classe: 'milhar' },
+    { label: 'Centena', pct: taxas.centena || 0, classe: 'centena' },
+    { label: 'Dezena', pct: taxas.dezena || 0, classe: 'dezena' },
+    { label: 'Grupo', pct: taxas.grupo || 0, classe: 'grupo' },
+    { label: 'Sugestão', pct: taxas.sugestao || 0, classe: 'sugestao' }
+  ];
+  return items.map(it => {
+    const w = Math.max(0, Math.min(100, Number(it.pct) || 0));
+    return `<div class="bar-row">
+      <div class="bar-label">${it.label}</div>
+      <div class="bar-track"><div class="bar-fill ${it.classe}" style="width:${w}%"></div></div>
+      <div class="bar-pct">${w}%</div>
+    </div>`;
+  }).join('');
+}
+
+async function carregarHistoricoPrevisoes() {
+  const box = document.getElementById('lista-historico-prev');
+  const chart = document.getElementById('chart-taxas');
+  if (box) box.innerHTML = '<div class="empty">Carregando...</div>';
+  try {
+    const r = await api('historico_previsoes');
+    if (chart) chart.innerHTML = renderBarrasTaxas(r.taxas || {});
+    const badge = document.getElementById('badge-taxas');
+    if (badge) badge.textContent = (r.fechados || 0) + ' fechadas';
+
+    if (!r.itens || !r.itens.length) {
+      if (box) box.innerHTML = '<div class="empty">Nenhuma previsão salva ainda.<br>Use <strong>Salvar previsão</strong> antes do sorteio.</div>';
+      return;
+    }
+
+    box.innerHTML = '';
+    r.itens.forEach(it => {
+      const ac = it.acertos || {};
+      const st = it.status === 'FECHADO'
+        ? '<span class="badge-ok">FECHADO</span>'
+        : '<span class="badge-pend">' + (it.status || 'PENDENTE') + '</span>';
+      const div = document.createElement('div');
+      div.className = 'hist-card';
+      div.innerHTML = `
+        <div class="title">${st} · ${it.criado || it.id || ''}</div>
+        <div class="meta">
+          ${it.sorteio && it.sorteio.data
+            ? `Sorteio: ${it.sorteio.data} ${it.sorteio.hora || ''}<br>Números: ${(it.sorteio.numeros || []).join(' ')}<br>`
+            : 'Aguardando sorteio<br>'}
+          Acertos → M:${ac.milhar || 0} C:${ac.centena || 0} D:${ac.dezena || 0} G:${ac.grupo || 0}
+          · Sug M:${ac.sugestao || 0} / C:${ac.sugestao_centena || 0}
+          ${it.detalhes ? '<br>' + it.detalhes : ''}
+          <br><span style="opacity:.75">Sugestão: ${(it.sugestao || []).join(' ') || '—'}</span>
+        </div>`;
+      box.appendChild(div);
+    });
+  } catch (e) {
+    if (box) box.innerHTML = `<div class="empty">Erro: ${e.message}<br>Confira se a API tem action=historico_previsoes</div>`;
+  }
+}
+
+async function salvarPrevisaoAgora() {
+  setStatus('Salvando previsão (atrasados + sugestão)...');
+  try {
+    const r = await api('salvar_previsao');
+    setStatus(r.sucesso ? ('Previsão salva: ' + (r.idPrev || 'ok')) : 'Falha ao salvar previsão');
+    carregarHistoricoPrevisoes();
+  } catch (e) {
+    setStatus('Erro ao salvar: ' + e.message, true);
+  }
+}
+
 async function verificarAcertos() {
   const box = document.getElementById('box-acertos');
   box.innerHTML = '<div class="empty">Verificando...</div>';
-  setStatus('Comparando atrasados (antes do sorteio) com o último resultado...');
+  setStatus('Comparando atrasados com o último sorteio...');
 
   try {
     try { await api('coletar'); } catch (e) {}
 
     const r = await api('verificar');
-    if (!r.sorteio) {
+
+    // Compatível com resposta plana ou aninhada
+    const sorteio = r.sorteio || (r.verificacao && r.verificacao.sorteio) || null;
+    const s = r.resumo || (r.verificacao && r.verificacao.resumo) || {};
+    const ac = r.acertos || (r.verificacao && r.verificacao.acertos) || {};
+
+    if (!sorteio) {
       box.innerHTML = '<div class="empty">Nenhum sorteio encontrado. Colete resultados.</div>';
       return;
     }
 
-    const s = r.resumo || {};
     let html = '';
-
-    // Cabeçalho do sorteio
-    html += `<div class="draw-header">🕐 ${r.sorteio.data || formatarData(r.sorteio.data)} · ${r.sorteio.hora || ''} · ID ${r.sorteio.id || ''}</div>`;
-
-    // Fonte da comparação
+    html += `<div class="draw-header">🕐 ${sorteio.data || formatarData(sorteio.data)} · ${sorteio.hora || ''} · ID ${sorteio.id || ''}</div>`;
     html += `<div class="draw-header" style="margin-top:8px;">
       Fonte: <strong>${r.fonte || '-'}</strong>
       ${r.snapshotEm ? ' · ' + r.snapshotEm : ''}
@@ -492,7 +612,7 @@ async function verificarAcertos() {
     </div>`;
 
     html += `<div class="grid" style="margin:12px 0;">`;
-    (r.sorteio.numeros || []).forEach((n, i) => {
+    (sorteio.numeros || []).forEach((n, i) => {
       html += `<div class="card"><div class="rank">Pos ${i + 1}</div><div class="num">${n}</div></div>`;
     });
     html += `</div>`;
@@ -531,7 +651,6 @@ async function verificarAcertos() {
       return h;
     }
 
-    const ac = r.acertos || {};
     html += bloco('🎯 Milhares atrasadas que saíram', ac.milhar, 'milhar');
     html += bloco('🔢 Centenas atrasadas que saíram', ac.centena, 'centena');
     html += bloco('📶 Dezenas atrasadas que saíram', ac.dezena, 'dezena');
@@ -546,14 +665,18 @@ async function verificarAcertos() {
 
     setStatus(
       total > 0
-        ? `Acertos: M${s.milhar} C${s.centena} D${s.dezena} G${s.grupo} · Sug ${s.sugestao}/${s.sugestao_centena}`
+        ? `Acertos: M${s.milhar || 0} C${s.centena || 0} D${s.dezena || 0} G${s.grupo || 0} · Sug ${s.sugestao || 0}/${s.sugestao_centena || 0}`
         : 'Nenhum acerto neste sorteio'
     );
+
+    // Atualiza gráfico e lista
+    carregarHistoricoPrevisoes();
   } catch (e) {
     box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
     setStatus('Erro na verificação: ' + e.message, true);
   }
 }
+
 status();
 carregar();
 </script>
