@@ -33,7 +33,7 @@
     flex-shrink: 0; box-shadow: 0 0 8px var(--success);
   }
   .status.error .dot { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
-  .nav { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-bottom: 14px; }
+  .nav { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 14px; }
   @media (max-width: 640px) { .nav { grid-template-columns: repeat(3, 1fr); } }
   .nav-btn {
     border: 1px solid var(--border); background: var(--card); color: var(--text);
@@ -137,22 +137,27 @@
     <div class="logo">ANALYZER</div>
     <h1>Lotto Trivo</h1>
   </div>
+
   <div class="status" id="status">
     <div class="dot"></div>
     <div>Carregando sistema...</div>
   </div>
+
   <div class="nav">
     <button class="nav-btn active" data-panel="painel-inicio" onclick="trocarPainel('painel-inicio', this)">🏠 Início</button>
     <button class="nav-btn" data-panel="painel-atrasados" onclick="trocarPainel('painel-atrasados', this)">⏳ Atrasados</button>
     <button class="nav-btn" data-panel="painel-analise" onclick="trocarPainel('painel-analise', this)">📊 Análise</button>
     <button class="nav-btn" data-panel="painel-resultados" onclick="trocarPainel('painel-resultados', this)">📋 Resultados</button>
     <button class="nav-btn" data-panel="painel-acertos" onclick="trocarPainel('painel-acertos', this)">✅ Acertos</button>
+    <button class="nav-btn" data-panel="painel-palpite-grupos" onclick="trocarPainel('painel-palpite-grupos', this)">🎲 Grupos</button>
   </div>
+
   <div class="actions">
     <button class="btn btn-primary" onclick="coletar()">🔄 Coletar</button>
     <button class="btn btn-secondary" onclick="previsao()">📊 Análise</button>
     <button class="btn btn-secondary" onclick="backtest()">🧪 Backtest</button>
   </div>
+
   <!-- INÍCIO -->
   <div class="panel active" id="painel-inicio">
     <div class="section">
@@ -172,6 +177,7 @@
       <div class="grid" id="ranking-geral"></div>
     </div>
   </div>
+
   <!-- ATRASADOS -->
   <div class="panel" id="painel-atrasados">
     <div class="subnav">
@@ -193,6 +199,7 @@
       🔄 Atualizar atrasados
     </button>
   </div>
+
   <!-- ANÁLISE -->
   <div class="panel" id="painel-analise">
     <div class="section">
@@ -213,6 +220,7 @@
       <div id="por-posicao"></div>
     </div>
   </div>
+
   <!-- RESULTADOS -->
   <div class="panel" id="painel-resultados">
     <div class="section">
@@ -222,6 +230,7 @@
       </div>
     </div>
   </div>
+
   <!-- ACERTOS -->
   <div class="panel" id="painel-acertos">
     <div class="section">
@@ -258,7 +267,24 @@
       </div>
     </div>
   </div>
+
+  <!-- NOVO: PALPITE POR GRUPOS -->
+  <div class="panel" id="painel-palpite-grupos">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">🎲 Palpite por Grupos Atrasados</div>
+        <div class="section-badge">4 milhares por grupo</div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-bottom:16px;" onclick="carregarPalpiteGrupos()">
+        🔄 Gerar / Atualizar Palpite
+      </button>
+      <div id="lista-palpite-grupos">
+        <div class="empty">Toque em <strong>Gerar / Atualizar Palpite</strong> para analisar os grupos atrasados.</div>
+      </div>
+    </div>
+  </div>
 </div>
+
 <script>
 const API = 'https://script.google.com/macros/s/AKfycbwB1IMATuzJerRoWu9QVX5fKLApC8_uW_XxCdOp_UIsr5TZv8o9rvGs1ZxXlflVmfCDGw/exec';
 let cacheAtrasados = null;
@@ -293,6 +319,7 @@ function trocarPainel(id, btn) {
   if (id === 'painel-atrasados') carregarAtrasados();
   if (id === 'painel-resultados') carregar();
   if (id === 'painel-acertos') carregarHistoricoPrevisoes();
+  if (id === 'painel-palpite-grupos') carregarPalpiteGrupos();
 }
 
 function formatarData(data) {
@@ -565,23 +592,19 @@ async function verificarAcertos() {
   box.innerHTML = '<div class="empty">Verificando...</div>';
   setStatus('Comparando atrasados com o último sorteio...');
   try {
-    // Dispara a coleta em paralelo (não bloqueia tanto)
     const coletaPromise = api('coletar').catch(() => null);
-
-    // Já chama a verificação enquanto a coleta roda
     const r = await api('verificar');
-
-    // Espera a coleta terminar (se ainda estiver rodando) só para não deixar lixo
     await coletaPromise;
 
-    // Compatível com resposta plana ou aninhada
     const sorteio = r.sorteio || (r.verificacao && r.verificacao.sorteio) || null;
     const s = r.resumo || (r.verificacao && r.verificacao.resumo) || {};
     const ac = r.acertos || (r.verificacao && r.verificacao.acertos) || {};
+
     if (!sorteio) {
       box.innerHTML = '<div class="empty">Nenhum sorteio encontrado. Colete resultados.</div>';
       return;
     }
+
     let html = '';
     html += `<div class="draw-header">🕐 ${sorteio.data || formatarData(sorteio.data)} · ${sorteio.hora || ''} · ID ${sorteio.id || ''}</div>`;
     html += `<div class="draw-header" style="margin-top:8px;">
@@ -594,6 +617,7 @@ async function verificarAcertos() {
       html += `<div class="card"><div class="rank">Pos ${i + 1}</div><div class="num">${n}</div></div>`;
     });
     html += `</div>`;
+
     html += `
       <div class="section-header" style="margin-top:8px;">
         <div class="section-title">Resumo de acertos</div>
@@ -606,6 +630,7 @@ async function verificarAcertos() {
         <div class="card" style="border-color:#2563eb;"><div class="rank">Sugestão milhar</div><div class="num">${s.sugestao || 0}</div></div>
         <div class="card" style="border-color:#0891b2;"><div class="rank">Sugestão centena</div><div class="num">${s.sugestao_centena || 0}</div></div>
       </div>`;
+
     function bloco(titulo, lista, classe) {
       if (!lista || !lista.length) {
         return `<div class="section"><div class="section-title">${titulo}</div>
@@ -626,25 +651,76 @@ async function verificarAcertos() {
       h += `</div></div>`;
       return h;
     }
+
     html += bloco('🎯 Milhares atrasadas que saíram', ac.milhar, 'milhar');
     html += bloco('🔢 Centenas atrasadas que saíram', ac.centena, 'centena');
     html += bloco('📶 Dezenas atrasadas que saíram', ac.dezena, 'dezena');
     html += bloco('🎲 Grupos atrasados que saíram', ac.grupo, 'grupo');
     html += bloco('💡 Acertos da sugestão', ac.sugestao, '');
+
     box.innerHTML = html;
-    const total =
-      (s.milhar || 0) + (s.centena || 0) + (s.dezena || 0) +
-      (s.grupo || 0) + (s.sugestao || 0) + (s.sugestao_centena || 0);
+
+    const total = (s.milhar || 0) + (s.centena || 0) + (s.dezena || 0) +
+                  (s.grupo || 0) + (s.sugestao || 0) + (s.sugestao_centena || 0);
+
     setStatus(
       total > 0
         ? `Acertos: M${s.milhar || 0} C${s.centena || 0} D${s.dezena || 0} G${s.grupo || 0} · Sug ${s.sugestao || 0}/${s.sugestao_centena || 0}`
         : 'Nenhum acerto neste sorteio'
     );
-    // Atualiza gráfico e lista
+
     carregarHistoricoPrevisoes();
   } catch (e) {
     box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
     setStatus('Erro na verificação: ' + e.message, true);
+  }
+}
+
+/* ===== NOVO: PALPITE POR GRUPOS ===== */
+async function carregarPalpiteGrupos() {
+  const box = document.getElementById('lista-palpite-grupos');
+  box.innerHTML = '<div class="empty">Analisando grupos atrasados e gerando palpites...</div>';
+  setStatus('Gerando palpite por grupos atrasados...');
+
+  try {
+    const r = await api('palpite_grupos');
+
+    if (!r.grupos || !r.grupos.length) {
+      box.innerHTML = '<div class="empty">Nenhum dado disponível.</div>';
+      return;
+    }
+
+    let html = `<div class="draw-header">Gerado em ${r.geradoEm || ''} · Base: ${r.totalSorteios || 0} sorteios</div>`;
+
+    r.grupos.forEach(g => {
+      html += `
+        <div class="pos-box" style="border-left: 4px solid #10b981;">
+          <div class="pos-title">
+            #${g.posicao} — Grupo ${g.grupo}
+            <span style="font-size:12px;color:var(--muted);font-weight:400;">
+              · Atraso: ${g.atraso} · Freq: ${g.frequencia}
+            </span>
+          </div>
+          <div class="candidatos">
+      `;
+
+      (g.milhares || []).forEach(m => {
+        html += `
+          <div class="candidato" style="background:#0f2a1f;border-color:#1a4d35;">
+            <strong style="color:#6ee7b7;font-size:16px;">${m.milhar}</strong>
+            <span> · Dez ${m.dezena} · F${m.frequencia} A${m.atraso}</span>
+          </div>
+        `;
+      });
+
+      html += `</div></div>`;
+    });
+
+    box.innerHTML = html;
+    setStatus('Palpite por grupos gerado com sucesso');
+  } catch (e) {
+    box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
+    setStatus('Erro ao gerar palpite por grupos', true);
   }
 }
 
@@ -655,7 +731,7 @@ function getHoraMinuto() {
 }
 
 function getHoje() {
-  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  return new Date().toISOString().slice(0, 10);
 }
 
 function jaExecutou(tipo, horario) {
@@ -672,7 +748,6 @@ function checkSchedule() {
   const hm = getHoraMinuto();
 
   HORARIOS_VERIFICAR.forEach(horaVerificar => {
-    // Calcula 10 minutos antes
     const [h, m] = horaVerificar.split(':').map(Number);
     let salvarH = h;
     let salvarM = m - 10;
@@ -682,14 +757,12 @@ function checkSchedule() {
     }
     const horaSalvar = String(salvarH).padStart(2, '0') + ':' + String(salvarM).padStart(2, '0');
 
-    // Salvar previsão (10 min antes)
     if (hm === horaSalvar && !jaExecutou('salvar', horaSalvar)) {
       marcarExecutado('salvar', horaSalvar);
       setStatus(`⏰ Automático: salvando previsão (${horaSalvar})...`);
       salvarPrevisaoAgora();
     }
 
-    // Verificar acertos no horário exato
     if (hm === horaVerificar && !jaExecutou('verificar', horaVerificar)) {
       marcarExecutado('verificar', horaVerificar);
       setStatus(`⏰ Automático: verificando acertos (${horaVerificar})...`);
@@ -698,13 +771,10 @@ function checkSchedule() {
   });
 }
 
-// Roda a cada 20 segundos (suficiente para pegar o minuto certo)
 setInterval(checkSchedule, 20000);
-
-// Também verifica logo ao carregar a página
 checkSchedule();
 
-// Inicialização normal
+// Inicialização
 status();
 carregar();
 </script>
