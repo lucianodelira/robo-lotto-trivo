@@ -57,6 +57,17 @@
     box-shadow: 0 4px 14px rgba(37, 99, 235, 0.3);
   }
   .btn-secondary { background: var(--card); border: 1px solid var(--border); color: #fff; }
+  .btn-copy {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #e2e8f0;
+    padding: 8px 14px;
+    font-size: 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 8px;
+  }
+  .btn-copy:hover { background: #334155; }
   .btn:active { transform: scale(0.98); }
   .subnav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
   @media (max-width: 520px) { .subnav { grid-template-columns: repeat(2, 1fr); } }
@@ -129,106 +140,6 @@
   .hist-card .meta { font-size: 12px; color: var(--muted); line-height: 1.5; }
   .badge-ok { color: #6ee7b7; }
   .badge-pend { color: #fcd34d; }
-
-  /* Estilos da página de explicação */
-  .explain-card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 22px;
-    margin-bottom: 20px;
-  }
-  .explain-card h2 {
-    font-size: 17px;
-    color: var(--accent);
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .explain-card h3 {
-    font-size: 15px;
-    margin: 18px 0 10px;
-    color: #e2e8f0;
-  }
-  .explain-card p {
-    color: #cbd5e1;
-    margin-bottom: 12px;
-    font-size: 14.5px;
-    line-height: 1.55;
-  }
-  .explain-card ul, .explain-card ol {
-    padding-left: 20px;
-    margin-bottom: 14px;
-  }
-  .explain-card li {
-    margin-bottom: 7px;
-    color: #cbd5e1;
-    font-size: 14.5px;
-  }
-  .highlight-box {
-    background: rgba(16, 185, 129, 0.1);
-    border-left: 4px solid var(--success);
-    padding: 14px 16px;
-    border-radius: 0 10px 10px 0;
-    margin: 16px 0;
-    font-size: 14.5px;
-    color: #d1fae5;
-  }
-  .formula-box {
-    background: #0f172a;
-    border: 1px solid #1e293b;
-    border-radius: 12px;
-    padding: 16px;
-    font-family: monospace;
-    font-size: 14px;
-    color: #a5b4fc;
-    margin: 14px 0;
-    overflow-x: auto;
-  }
-  .step-item {
-    display: flex;
-    gap: 14px;
-    margin-bottom: 18px;
-  }
-  .step-num {
-    min-width: 30px;
-    height: 30px;
-    background: linear-gradient(135deg, #3b82f6, #2563eb);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    font-size: 13px;
-    flex-shrink: 0;
-  }
-  .step-text h4 {
-    font-size: 14.5px;
-    margin-bottom: 3px;
-  }
-  .step-text p {
-    margin: 0;
-    font-size: 13.5px;
-    color: var(--muted);
-  }
-  .simple-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 14px 0;
-    font-size: 13.5px;
-  }
-  .simple-table th {
-    background: #1e293b;
-    padding: 10px 12px;
-    text-align: left;
-    font-weight: 600;
-  }
-  .simple-table td {
-    padding: 10px 12px;
-    border-bottom: 1px solid #1e293b;
-    color: #cbd5e1;
-  }
   .dezena-chip {
     display: inline-flex;
     align-items: center;
@@ -243,6 +154,14 @@
     color: #6ee7b7;
     margin: 4px;
   }
+  .copy-feedback {
+    font-size: 12px;
+    color: #6ee7b7;
+    margin-left: 8px;
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .copy-feedback.show { opacity: 1; }
 </style>
 </head>
 <body>
@@ -284,6 +203,10 @@
       <div class="sugestao-grid" id="sugestao">
         <div class="empty">Toque em <strong>Análise</strong> para gerar a sugestão.</div>
       </div>
+      <button class="btn-copy" onclick="copiarSugestao()" id="btn-copiar-sugestao" style="display:none;">
+        📋 Copiar Sugestão
+      </button>
+      <span class="copy-feedback" id="feedback-sugestao">Copiado!</span>
     </div>
     <div class="section" id="secao-geral-home" style="display:none;">
       <div class="section-header">
@@ -310,6 +233,10 @@
       <div class="grid" id="lista-atrasados">
         <div class="empty">Carregando...</div>
       </div>
+      <button class="btn-copy" onclick="copiarAtrasados()" id="btn-copiar-atrasados" style="display:none;margin-top:12px;">
+        📋 Copiar estes Atrasados
+      </button>
+      <span class="copy-feedback" id="feedback-atrasados">Copiado!</span>
     </div>
     <button class="btn btn-secondary" style="width:100%;margin-top:8px;" onclick="carregarAtrasados(true)">
       🔄 Atualizar atrasados
@@ -323,6 +250,10 @@
       <div class="sugestao-grid" id="sugestao-analise">
         <div class="empty">Toque em <strong>Análise</strong>.</div>
       </div>
+      <button class="btn-copy" onclick="copiarSugestao()" id="btn-copiar-sugestao-analise" style="display:none;">
+        📋 Copiar Sugestão
+      </button>
+      <span class="copy-feedback" id="feedback-sugestao-analise">Copiado!</span>
     </div>
     <div class="section" id="secao-geral" style="display:none;">
       <div class="section-header">
@@ -395,12 +326,16 @@
         🔄 Gerar / Atualizar Palpite
       </button>
       <div id="lista-palpite-grupos">
-        <div class="empty">Toque em <strong>Gerar / Atualizar Palpite</strong> para analisar os grupos atrasados.</div>
+        <div class="empty">Toque em <strong>Gerar / Atualizar Palpite</strong>.</div>
       </div>
+      <button class="btn-copy" onclick="copiarPalpiteGrupos()" id="btn-copiar-grupos" style="display:none;margin-top:12px;">
+        📋 Copiar todas as milhares
+      </button>
+      <span class="copy-feedback" id="feedback-grupos">Copiado!</span>
     </div>
   </div>
 
-  <!-- NOVA ABA: PALPITÃO -->
+  <!-- PALPITÃO -->
   <div class="panel" id="painel-palpitao">
     <div class="section">
       <div class="section-header">
@@ -410,10 +345,13 @@
       <button class="btn btn-primary" style="width:100%;margin-bottom:16px;" onclick="carregarPalpitao()">
         🔄 Gerar / Atualizar Palpitão
       </button>
-
       <div id="box-palpitao">
-        <div class="empty">Toque em <strong>Gerar / Atualizar Palpitão</strong> para analisar as dezenas.</div>
+        <div class="empty">Toque em <strong>Gerar / Atualizar Palpitão</strong>.</div>
       </div>
+      <button class="btn-copy" onclick="copiarPalpitao()" id="btn-copiar-palpitao" style="display:none;margin-top:12px;">
+        📋 Copiar as 20 dezenas
+      </button>
+      <span class="copy-feedback" id="feedback-palpitao">Copiado!</span>
     </div>
   </div>
 
@@ -421,80 +359,13 @@
   <div class="panel" id="painel-explicacao">
     <div class="section">
       <div class="section-header">
-        <div class="section-title">📖 Como funciona o Palpite por Grupos</div>
-        <div class="section-badge">Transparência total</div>
+        <div class="section-title">📖 Como funciona</div>
+        <div class="section-badge">Transparência</div>
       </div>
-
-      <div class="explain-card">
-        <h2>🎯 Por que este método existe?</h2>
-        <p>Após analisar centenas de sorteios, identificamos que os <strong>Grupos Atrasados</strong> possuem uma das maiores taxas de acerto do sistema (chegando a 100% em períodos recentes).</p>
-        <div class="highlight-box">
-          Por isso desenvolvemos um método específico que combina os grupos mais atrasados com as milhares mais fortes daquele grupo, usando dados reais do histórico.
-        </div>
-      </div>
-
-      <div class="explain-card">
-        <h2>📋 Como o palpite é gerado (passo a passo)</h2>
-        <div class="step-item">
-          <div class="step-num">1</div>
-          <div class="step-text">
-            <h4>Identificação dos Grupos Atrasados</h4>
-            <p>O sistema calcula os 10 grupos que estão há mais tempo sem sair (Top 10 atrasados).</p>
-          </div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">2</div>
-          <div class="step-text">
-            <h4>Mapeamento das Dezenas do Grupo</h4>
-            <p>Cada grupo possui exatamente 4 dezenas. Exemplo: Grupo 7 = 25, 26, 27 e 28.</p>
-          </div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">3</div>
-          <div class="step-text">
-            <h4>Busca das Milhares Históricas</h4>
-            <p>O sistema busca no histórico todas as milhares que já saíram e que terminam com as dezenas daquele grupo.</p>
-          </div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">4</div>
-          <div class="step-text">
-            <h4>Cálculo do Score de cada Milhar</h4>
-            <p>Cada milhar candidata recebe uma pontuação baseada em critérios estatísticos reais.</p>
-          </div>
-        </div>
-        <div class="step-item">
-          <div class="step-num">5</div>
-          <div class="step-text">
-            <h4>Seleção das 4 melhores Milhares</h4>
-            <p>As 4 milhares com maior score de cada grupo são selecionadas para formar o palpite.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="explain-card">
-        <h2>🧮 Fórmula do Score</h2>
-        <p>Cada milhar recebe uma pontuação calculada da seguinte forma:</p>
-        <div class="formula-box">
-          Score = (Frequência × 2) + (Atraso × 0.8) + Bônus
-        </div>
-        <h3>O que significa cada parte:</h3>
-        <ul>
-          <li><strong>Frequência × 2</strong> → Quantas vezes a milhar já saiu no histórico.</li>
-          <li><strong>Atraso × 0.8</strong> → Há quantos sorteios a milhar não sai.</li>
-          <li><strong>Bônus</strong> → Pontos extras quando a milhar ou centena também estão atrasadas.</li>
-        </ul>
-      </div>
-
-      <div class="explain-card">
-        <h2>🔥 Sobre o Palpitão (20 dezenas)</h2>
-        <p>O Palpitão analisa todas as dezenas (00 a 99) e seleciona as 20 mais fortes com base em:</p>
-        <ul>
-          <li>Frequência histórica</li>
-          <li>Atraso atual</li>
-          <li>Tendência recente (últimos 30 sorteios)</li>
-        </ul>
-        <p>O objetivo é cobrir pelo menos 10 dezenas do próximo resultado.</p>
+      <div class="explain-card" style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;">
+        <h2 style="color:var(--accent);margin-bottom:12px;">🎯 Lógica dos Palpites</h2>
+        <p style="color:#cbd5e1;margin-bottom:12px;">Todos os palpites são gerados com base em dados históricos reais (frequência + atraso + tendência recente). Nenhum número é sorteado aleatoriamente.</p>
+        <p style="color:#cbd5e1;">Use os botões <strong>📋 Copiar</strong> para copiar facilmente os números e colar no seu aplicativo de jogo.</p>
       </div>
     </div>
   </div>
@@ -504,6 +375,9 @@
 const API = 'https://script.google.com/macros/s/AKfycbwB1IMATuzJerRoWu9QVX5fKLApC8_uW_XxCdOp_UIsr5TZv8o9rvGs1ZxXlflVmfCDGw/exec';
 let cacheAtrasados = null;
 let tipoAtrasadoAtual = 'milhar';
+let cacheSugestao = [];
+let cachePalpiteGrupos = [];
+let cachePalpitao = [];
 
 const HORARIOS_VERIFICAR = [
   '01:32', '05:32', '07:32', '09:32', '11:32',
@@ -552,6 +426,60 @@ function formatarData(data) {
   return data;
 }
 
+/* ===== FUNÇÃO DE COPIAR ===== */
+function copiarTexto(texto, feedbackId) {
+  if (!texto) return;
+  navigator.clipboard.writeText(texto).then(() => {
+    const fb = document.getElementById(feedbackId);
+    if (fb) {
+      fb.classList.add('show');
+      setTimeout(() => fb.classList.remove('show'), 1800);
+    }
+    setStatus('Números copiados com sucesso!');
+  }).catch(() => {
+    // Fallback antigo
+    const ta = document.createElement('textarea');
+    ta.value = texto;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    setStatus('Números copiados!');
+  });
+}
+
+function copiarSugestao() {
+  if (!cacheSugestao.length) return;
+  copiarTexto(cacheSugestao.join(' '), 'feedback-sugestao');
+  const fb2 = document.getElementById('feedback-sugestao-analise');
+  if (fb2) {
+    fb2.classList.add('show');
+    setTimeout(() => fb2.classList.remove('show'), 1800);
+  }
+}
+
+function copiarAtrasados() {
+  if (!cacheAtrasados || !cacheAtrasados[tipoAtrasadoAtual]) return;
+  const lista = cacheAtrasados[tipoAtrasadoAtual].map(i => i.valor);
+  copiarTexto(lista.join(' '), 'feedback-atrasados');
+}
+
+function copiarPalpiteGrupos() {
+  if (!cachePalpiteGrupos.length) return;
+  const todos = [];
+  cachePalpiteGrupos.forEach(g => {
+    (g.milhares || []).forEach(m => todos.push(m.milhar));
+  });
+  copiarTexto(todos.join(' '), 'feedback-grupos');
+}
+
+function copiarPalpitao() {
+  if (!cachePalpitao.length) return;
+  const lista = cachePalpitao.map(d => d.dezena);
+  copiarTexto(lista.join(' '), 'feedback-palpitao');
+}
+
+/* ===== RESTANTE DAS FUNÇÕES ===== */
 async function status() {
   try {
     const r = await api('status');
@@ -656,6 +584,7 @@ function renderAtrasados(tipo) {
   const lista = cacheAtrasados[tipo] || [];
   if (!lista.length) {
     div.innerHTML = `<div class="empty">Nenhum dado de <strong>${tipo}</strong>.</div>`;
+    document.getElementById('btn-copiar-atrasados').style.display = 'none';
     return;
   }
   lista.forEach(item => {
@@ -667,6 +596,7 @@ function renderAtrasados(tipo) {
       <div class="meta">Atraso: ${item.atraso} sorteios<br>Freq: ${item.frequencia}<br>${item.ultimo_numero || ''}</div>`;
     div.appendChild(card);
   });
+  document.getElementById('btn-copiar-atrasados').style.display = 'inline-block';
 }
 
 async function previsao() {
@@ -682,6 +612,8 @@ async function previsao() {
 }
 
 function mostrarPrevisao(r) {
+  cacheSugestao = r.sugestao || [];
+  
   ['sugestao', 'sugestao-analise'].forEach(id => {
     const el = document.getElementById(id);
     if (!el) return;
@@ -693,6 +625,11 @@ function mostrarPrevisao(r) {
       el.appendChild(card);
     });
   });
+
+  // Mostra botões de copiar
+  document.getElementById('btn-copiar-sugestao').style.display = cacheSugestao.length ? 'inline-block' : 'none';
+  document.getElementById('btn-copiar-sugestao-analise').style.display = cacheSugestao.length ? 'inline-block' : 'none';
+
   [document.getElementById('ranking-geral'), document.getElementById('ranking-geral-analise')].forEach(el => {
     if (!el) return;
     el.innerHTML = '';
@@ -706,6 +643,7 @@ function mostrarPrevisao(r) {
   });
   document.getElementById('secao-geral-home').style.display = 'block';
   document.getElementById('secao-geral').style.display = 'block';
+
   const posDiv = document.getElementById('por-posicao');
   posDiv.innerHTML = '';
   (r.por_posicao || []).forEach(item => {
@@ -727,7 +665,7 @@ async function backtest() {
   setStatus('Executando backtest...');
   try {
     const r = await api('backtest');
-    setStatus(`Backtest · ${r.testes || 0} testes · ${r.acertos_top10 || r.acertos || 0} acertos · ${r.taxa_top10 || r.taxa_acerto_top10 || 0}%`);
+    setStatus(`Backtest · ${r.testes || 0} testes · ${r.acertos_top10 || r.acertos || 0} acertos`);
   } catch (e) {
     setStatus('Erro no backtest: ' + e.message, true);
   }
@@ -767,20 +705,14 @@ async function carregarHistoricoPrevisoes() {
     box.innerHTML = '';
     r.itens.forEach(it => {
       const ac = it.acertos || {};
-      const st = it.status === 'FECHADO'
-        ? '<span class="badge-ok">FECHADO</span>'
-        : '<span class="badge-pend">' + (it.status || 'PENDENTE') + '</span>';
+      const st = it.status === 'FECHADO' ? '<span class="badge-ok">FECHADO</span>' : '<span class="badge-pend">' + (it.status || 'PENDENTE') + '</span>';
       const div = document.createElement('div');
       div.className = 'hist-card';
       div.innerHTML = `
         <div class="title">${st} · ${it.criado || it.id || ''}</div>
         <div class="meta">
-          ${it.sorteio && it.sorteio.data
-            ? `Sorteio: ${it.sorteio.data} ${it.sorteio.hora || ''}<br>Números: ${(it.sorteio.numeros || []).join(' ')}<br>`
-            : 'Aguardando sorteio<br>'}
-          Acertos → M:${ac.milhar || 0} C:${ac.centena || 0} D:${ac.dezena || 0} G:${ac.grupo || 0}
-          · Sug M:${ac.sugestao || 0} / C:${ac.sugestao_centena || 0}
-          ${it.detalhes ? '<br>' + it.detalhes : ''}
+          ${it.sorteio && it.sorteio.data ? `Sorteio: ${it.sorteio.data} ${it.sorteio.hora || ''}<br>Números: ${(it.sorteio.numeros || []).join(' ')}<br>` : 'Aguardando sorteio<br>'}
+          Acertos → M:${ac.milhar||0} C:${ac.centena||0} D:${ac.dezena||0} G:${ac.grupo||0}
         </div>`;
       box.appendChild(div);
     });
@@ -803,43 +735,36 @@ async function salvarPrevisaoAgora() {
 async function verificarAcertos() {
   const box = document.getElementById('box-acertos');
   box.innerHTML = '<div class="empty">Verificando...</div>';
-  setStatus('Comparando atrasados com o último sorteio...');
+  setStatus('Comparando atrasados...');
   try {
     const coletaPromise = api('coletar').catch(() => null);
     const r = await api('verificar');
     await coletaPromise;
-
     const sorteio = r.sorteio || null;
     const s = r.resumo || {};
-    const ac = r.acertos || {};
-
     if (!sorteio) {
       box.innerHTML = '<div class="empty">Nenhum sorteio encontrado.</div>';
       return;
     }
-
     let html = `<div class="draw-header">🕐 ${sorteio.data || ''} · ${sorteio.hora || ''} · ID ${sorteio.id || ''}</div>`;
     html += `<div class="grid" style="margin:12px 0;">`;
     (sorteio.numeros || []).forEach((n, i) => {
-      html += `<div class="card"><div class="rank">Pos ${i + 1}</div><div class="num">${n}</div></div>`;
+      html += `<div class="card"><div class="rank">Pos ${i+1}</div><div class="num">${n}</div></div>`;
     });
-    html += `</div>`;
-
-    html += `
+    html += `</div>
       <div class="section-header" style="margin-top:8px;"><div class="section-title">Resumo de acertos</div></div>
       <div class="grid">
-        <div class="card milhar"><div class="rank">Milhar</div><div class="num">${s.milhar || 0}</div></div>
-        <div class="card centena"><div class="rank">Centena</div><div class="num">${s.centena || 0}</div></div>
-        <div class="card dezena"><div class="rank">Dezena</div><div class="num">${s.dezena || 0}</div></div>
-        <div class="card grupo"><div class="rank">Grupo</div><div class="num">${s.grupo || 0}</div></div>
+        <div class="card milhar"><div class="rank">Milhar</div><div class="num">${s.milhar||0}</div></div>
+        <div class="card centena"><div class="rank">Centena</div><div class="num">${s.centena||0}</div></div>
+        <div class="card dezena"><div class="rank">Dezena</div><div class="num">${s.dezena||0}</div></div>
+        <div class="card grupo"><div class="rank">Grupo</div><div class="num">${s.grupo||0}</div></div>
       </div>`;
-
     box.innerHTML = html;
     setStatus(`Acertos: M${s.milhar||0} C${s.centena||0} D${s.dezena||0} G${s.grupo||0}`);
     carregarHistoricoPrevisoes();
   } catch (e) {
     box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
-    setStatus('Erro na verificação: ' + e.message, true);
+    setStatus('Erro na verificação', true);
   }
 }
 
@@ -853,6 +778,7 @@ async function carregarPalpiteGrupos() {
       box.innerHTML = '<div class="empty">Nenhum dado disponível.</div>';
       return;
     }
+    cachePalpiteGrupos = r.grupos;
     let html = `<div class="draw-header">Gerado em ${r.geradoEm || ''} · Base: ${r.totalSorteios || 0} sorteios</div>`;
     r.grupos.forEach(g => {
       html += `
@@ -868,6 +794,7 @@ async function carregarPalpiteGrupos() {
       html += `</div></div>`;
     });
     box.innerHTML = html;
+    document.getElementById('btn-copiar-grupos').style.display = 'inline-block';
     setStatus('Palpite por grupos gerado');
   } catch (e) {
     box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
@@ -875,86 +802,56 @@ async function carregarPalpiteGrupos() {
   }
 }
 
-/* ===== NOVA FUNÇÃO: PALPITÃO ===== */
 async function carregarPalpitao() {
   const box = document.getElementById('box-palpitao');
-  box.innerHTML = '<div class="empty">Analisando dezenas e gerando o Palpitão...</div>';
+  box.innerHTML = '<div class="empty">Analisando dezenas...</div>';
   setStatus('Gerando Análise Palpitão...');
-
   try {
     const r = await api('palpitao');
-
     if (!r.dezenas || !r.dezenas.length) {
       box.innerHTML = '<div class="empty">Nenhum dado disponível.</div>';
       return;
     }
-
+    cachePalpitao = r.dezenas;
     const a = r.analitico || {};
 
     let html = `
-      <div class="draw-header">
-        Gerado em ${r.geradoEm || ''} · Base: ${r.totalSorteios || 0} sorteios
-      </div>
-
+      <div class="draw-header">Gerado em ${r.geradoEm || ''} · Base: ${r.totalSorteios || 0} sorteios</div>
       <div class="pos-box" style="border-left: 4px solid #f59e0b; margin-top:14px;">
-        <div class="pos-title">📊 Analítico Histórico (últimos sorteios)</div>
+        <div class="pos-title">📊 Analítico Histórico</div>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:10px;">
-          <div class="card">
-            <div class="rank">Média de acertos</div>
-            <div class="num" style="color:#fbbf24;">${a.mediaAcertos || 0}</div>
-          </div>
-          <div class="card">
-            <div class="rank">Taxa ≥ 10 acertos</div>
-            <div class="num" style="color:#34d399;">${a.taxaAcima10 || 0}%</div>
-          </div>
-          <div class="card">
-            <div class="rank">Melhor resultado</div>
-            <div class="num">${a.melhor || 0}</div>
-          </div>
-          <div class="card">
-            <div class="rank">Pior resultado</div>
-            <div class="num">${a.pior || 0}</div>
-          </div>
+          <div class="card"><div class="rank">Média de acertos</div><div class="num" style="color:#fbbf24;">${a.mediaAcertos || 0}</div></div>
+          <div class="card"><div class="rank">Taxa ≥ 10 acertos</div><div class="num" style="color:#34d399;">${a.taxaAcima10 || 0}%</div></div>
+          <div class="card"><div class="rank">Melhor</div><div class="num">${a.melhor || 0}</div></div>
+          <div class="card"><div class="rank">Pior</div><div class="num">${a.pior || 0}</div></div>
         </div>
       </div>
-
       <div class="section-header" style="margin-top:20px;">
         <div class="section-title">🔥 20 Dezenas do Palpitão</div>
-        <div class="section-badge">Ordenadas por força</div>
       </div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
-    `;
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">`;
 
-    r.dezenas.forEach((d, i) => {
-      html += `
-        <div class="dezena-chip" title="Freq: ${d.frequencia} | Atraso: ${d.atraso} | Score: ${d.score}">
-          ${d.dezena}
-        </div>`;
+    r.dezenas.forEach(d => {
+      html += `<div class="dezena-chip" title="Freq: ${d.frequencia} | Atraso: ${d.atraso}">${d.dezena}</div>`;
     });
 
     html += `</div>
-
       <div class="pos-box">
-        <div class="pos-title">Detalhamento das 20 dezenas</div>
-        <div class="grid" style="margin-top:10px;">
-    `;
+        <div class="pos-title">Detalhamento</div>
+        <div class="grid" style="margin-top:10px;">`;
 
     r.dezenas.forEach((d, i) => {
       html += `
         <div class="card" style="border-color:#b45309;">
-          <div class="rank">#${i + 1}</div>
+          <div class="rank">#${i+1}</div>
           <div class="num" style="color:#fcd34d;">${d.dezena}</div>
-          <div class="meta">
-            Freq: ${d.frequencia}<br>
-            Atraso: ${d.atraso}<br>
-            Score: ${d.score}
-          </div>
+          <div class="meta">Freq: ${d.frequencia}<br>Atraso: ${d.atraso}<br>Score: ${d.score}</div>
         </div>`;
     });
-
     html += `</div></div>`;
 
     box.innerHTML = html;
+    document.getElementById('btn-copiar-palpitao').style.display = 'inline-block';
     setStatus('Palpitão gerado com sucesso');
   } catch (e) {
     box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
@@ -964,11 +861,9 @@ async function carregarPalpitao() {
 
 function getHoraMinuto() {
   const now = new Date();
-  return String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+  return String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
 }
-function getHoje() {
-  return new Date().toISOString().slice(0, 10);
-}
+function getHoje() { return new Date().toISOString().slice(0,10); }
 function jaExecutou(tipo, horario) {
   return localStorage.getItem(`auto_${tipo}_${getHoje()}_${horario}`) === '1';
 }
