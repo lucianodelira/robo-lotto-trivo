@@ -33,11 +33,11 @@
     flex-shrink: 0; box-shadow: 0 0 8px var(--success);
   }
   .status.error .dot { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
-  .nav { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin-bottom: 14px; }
-  @media (max-width: 640px) { .nav { grid-template-columns: repeat(3, 1fr); } }
+  .nav { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-bottom: 14px; }
+  @media (max-width: 700px) { .nav { grid-template-columns: repeat(4, 1fr); } }
   .nav-btn {
     border: 1px solid var(--border); background: var(--card); color: var(--text);
-    border-radius: 12px; padding: 12px 6px; font-size: 11px; font-weight: 600;
+    border-radius: 12px; padding: 11px 4px; font-size: 11px; font-weight: 600;
     cursor: pointer; transition: all 0.2s; text-align: center;
   }
   .nav-btn:hover { background: var(--card-hover); }
@@ -129,6 +129,120 @@
   .hist-card .meta { font-size: 12px; color: var(--muted); line-height: 1.5; }
   .badge-ok { color: #6ee7b7; }
   .badge-pend { color: #fcd34d; }
+
+  /* Estilos da página de explicação */
+  .explain-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 22px;
+    margin-bottom: 20px;
+  }
+  .explain-card h2 {
+    font-size: 17px;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .explain-card h3 {
+    font-size: 15px;
+    margin: 18px 0 10px;
+    color: #e2e8f0;
+  }
+  .explain-card p {
+    color: #cbd5e1;
+    margin-bottom: 12px;
+    font-size: 14.5px;
+    line-height: 1.55;
+  }
+  .explain-card ul, .explain-card ol {
+    padding-left: 20px;
+    margin-bottom: 14px;
+  }
+  .explain-card li {
+    margin-bottom: 7px;
+    color: #cbd5e1;
+    font-size: 14.5px;
+  }
+  .highlight-box {
+    background: rgba(16, 185, 129, 0.1);
+    border-left: 4px solid var(--success);
+    padding: 14px 16px;
+    border-radius: 0 10px 10px 0;
+    margin: 16px 0;
+    font-size: 14.5px;
+    color: #d1fae5;
+  }
+  .formula-box {
+    background: #0f172a;
+    border: 1px solid #1e293b;
+    border-radius: 12px;
+    padding: 16px;
+    font-family: monospace;
+    font-size: 14px;
+    color: #a5b4fc;
+    margin: 14px 0;
+    overflow-x: auto;
+  }
+  .step-item {
+    display: flex;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .step-num {
+    min-width: 30px;
+    height: 30px;
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .step-text h4 {
+    font-size: 14.5px;
+    margin-bottom: 3px;
+  }
+  .step-text p {
+    margin: 0;
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+  .simple-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 14px 0;
+    font-size: 13.5px;
+  }
+  .simple-table th {
+    background: #1e293b;
+    padding: 10px 12px;
+    text-align: left;
+    font-weight: 600;
+  }
+  .simple-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid #1e293b;
+    color: #cbd5e1;
+  }
+  .dezena-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 48px;
+    height: 42px;
+    background: linear-gradient(160deg, #0f2a1f, #0c1f17);
+    border: 1px solid #1a4d35;
+    border-radius: 10px;
+    font-weight: 800;
+    font-size: 16px;
+    color: #6ee7b7;
+    margin: 4px;
+  }
 </style>
 </head>
 <body>
@@ -150,6 +264,8 @@
     <button class="nav-btn" data-panel="painel-resultados" onclick="trocarPainel('painel-resultados', this)">📋 Resultados</button>
     <button class="nav-btn" data-panel="painel-acertos" onclick="trocarPainel('painel-acertos', this)">✅ Acertos</button>
     <button class="nav-btn" data-panel="painel-palpite-grupos" onclick="trocarPainel('painel-palpite-grupos', this)">🎲 Grupos</button>
+    <button class="nav-btn" data-panel="painel-palpitao" onclick="trocarPainel('painel-palpitao', this)">🔥 Palpitão</button>
+    <button class="nav-btn" data-panel="painel-explicacao" onclick="trocarPainel('painel-explicacao', this)">📖 Como Funciona</button>
   </div>
 
   <div class="actions">
@@ -268,7 +384,7 @@
     </div>
   </div>
 
-  <!-- NOVO: PALPITE POR GRUPOS -->
+  <!-- PALPITE POR GRUPOS -->
   <div class="panel" id="painel-palpite-grupos">
     <div class="section">
       <div class="section-header">
@@ -283,6 +399,105 @@
       </div>
     </div>
   </div>
+
+  <!-- NOVA ABA: PALPITÃO -->
+  <div class="panel" id="painel-palpitao">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">🔥 Análise Palpitão</div>
+        <div class="section-badge">20 dezenas fortes</div>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-bottom:16px;" onclick="carregarPalpitao()">
+        🔄 Gerar / Atualizar Palpitão
+      </button>
+
+      <div id="box-palpitao">
+        <div class="empty">Toque em <strong>Gerar / Atualizar Palpitão</strong> para analisar as dezenas.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMO FUNCIONA -->
+  <div class="panel" id="painel-explicacao">
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">📖 Como funciona o Palpite por Grupos</div>
+        <div class="section-badge">Transparência total</div>
+      </div>
+
+      <div class="explain-card">
+        <h2>🎯 Por que este método existe?</h2>
+        <p>Após analisar centenas de sorteios, identificamos que os <strong>Grupos Atrasados</strong> possuem uma das maiores taxas de acerto do sistema (chegando a 100% em períodos recentes).</p>
+        <div class="highlight-box">
+          Por isso desenvolvemos um método específico que combina os grupos mais atrasados com as milhares mais fortes daquele grupo, usando dados reais do histórico.
+        </div>
+      </div>
+
+      <div class="explain-card">
+        <h2>📋 Como o palpite é gerado (passo a passo)</h2>
+        <div class="step-item">
+          <div class="step-num">1</div>
+          <div class="step-text">
+            <h4>Identificação dos Grupos Atrasados</h4>
+            <p>O sistema calcula os 10 grupos que estão há mais tempo sem sair (Top 10 atrasados).</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">2</div>
+          <div class="step-text">
+            <h4>Mapeamento das Dezenas do Grupo</h4>
+            <p>Cada grupo possui exatamente 4 dezenas. Exemplo: Grupo 7 = 25, 26, 27 e 28.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">3</div>
+          <div class="step-text">
+            <h4>Busca das Milhares Históricas</h4>
+            <p>O sistema busca no histórico todas as milhares que já saíram e que terminam com as dezenas daquele grupo.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">4</div>
+          <div class="step-text">
+            <h4>Cálculo do Score de cada Milhar</h4>
+            <p>Cada milhar candidata recebe uma pontuação baseada em critérios estatísticos reais.</p>
+          </div>
+        </div>
+        <div class="step-item">
+          <div class="step-num">5</div>
+          <div class="step-text">
+            <h4>Seleção das 4 melhores Milhares</h4>
+            <p>As 4 milhares com maior score de cada grupo são selecionadas para formar o palpite.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="explain-card">
+        <h2>🧮 Fórmula do Score</h2>
+        <p>Cada milhar recebe uma pontuação calculada da seguinte forma:</p>
+        <div class="formula-box">
+          Score = (Frequência × 2) + (Atraso × 0.8) + Bônus
+        </div>
+        <h3>O que significa cada parte:</h3>
+        <ul>
+          <li><strong>Frequência × 2</strong> → Quantas vezes a milhar já saiu no histórico.</li>
+          <li><strong>Atraso × 0.8</strong> → Há quantos sorteios a milhar não sai.</li>
+          <li><strong>Bônus</strong> → Pontos extras quando a milhar ou centena também estão atrasadas.</li>
+        </ul>
+      </div>
+
+      <div class="explain-card">
+        <h2>🔥 Sobre o Palpitão (20 dezenas)</h2>
+        <p>O Palpitão analisa todas as dezenas (00 a 99) e seleciona as 20 mais fortes com base em:</p>
+        <ul>
+          <li>Frequência histórica</li>
+          <li>Atraso atual</li>
+          <li>Tendência recente (últimos 30 sorteios)</li>
+        </ul>
+        <p>O objetivo é cobrir pelo menos 10 dezenas do próximo resultado.</p>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -290,7 +505,6 @@ const API = 'https://script.google.com/macros/s/AKfycbwB1IMATuzJerRoWu9QVX5fKLAp
 let cacheAtrasados = null;
 let tipoAtrasadoAtual = 'milhar';
 
-/* ===== HORÁRIOS AUTOMÁTICOS ===== */
 const HORARIOS_VERIFICAR = [
   '01:32', '05:32', '07:32', '09:32', '11:32',
   '13:32', '15:32', '18:32', '20:32', '22:32'
@@ -320,6 +534,7 @@ function trocarPainel(id, btn) {
   if (id === 'painel-resultados') carregar();
   if (id === 'painel-acertos') carregarHistoricoPrevisoes();
   if (id === 'painel-palpite-grupos') carregarPalpiteGrupos();
+  if (id === 'painel-palpitao') carregarPalpitao();
 }
 
 function formatarData(data) {
@@ -440,7 +655,7 @@ function renderAtrasados(tipo) {
   }
   const lista = cacheAtrasados[tipo] || [];
   if (!lista.length) {
-    div.innerHTML = `<div class="empty">Nenhum dado de <strong>${tipo}</strong>.<br>Clique em <strong>Atualizar atrasados</strong>.</div>`;
+    div.innerHTML = `<div class="empty">Nenhum dado de <strong>${tipo}</strong>.</div>`;
     return;
   }
   lista.forEach(item => {
@@ -518,7 +733,6 @@ async function backtest() {
   }
 }
 
-/* ===== ACERTOS + HISTÓRICO ===== */
 function renderBarrasTaxas(taxas) {
   const items = [
     { label: 'Milhar', pct: taxas.milhar || 0, classe: 'milhar' },
@@ -547,7 +761,7 @@ async function carregarHistoricoPrevisoes() {
     const badge = document.getElementById('badge-taxas');
     if (badge) badge.textContent = (r.fechados || 0) + ' fechadas';
     if (!r.itens || !r.itens.length) {
-      if (box) box.innerHTML = '<div class="empty">Nenhuma previsão salva ainda.<br>Use <strong>Salvar previsão</strong> antes do sorteio.</div>';
+      if (box) box.innerHTML = '<div class="empty">Nenhuma previsão salva ainda.</div>';
       return;
     }
     box.innerHTML = '';
@@ -567,20 +781,19 @@ async function carregarHistoricoPrevisoes() {
           Acertos → M:${ac.milhar || 0} C:${ac.centena || 0} D:${ac.dezena || 0} G:${ac.grupo || 0}
           · Sug M:${ac.sugestao || 0} / C:${ac.sugestao_centena || 0}
           ${it.detalhes ? '<br>' + it.detalhes : ''}
-          <br><span style="opacity:.75">Sugestão: ${(it.sugestao || []).join(' ') || '—'}</span>
         </div>`;
       box.appendChild(div);
     });
   } catch (e) {
-    if (box) box.innerHTML = `<div class="empty">Erro: ${e.message}<br>Confira se a API tem action=historico_previsoes</div>`;
+    if (box) box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
   }
 }
 
 async function salvarPrevisaoAgora() {
-  setStatus('Salvando previsão (atrasados + sugestão)...');
+  setStatus('Salvando previsão...');
   try {
     const r = await api('salvar_previsao');
-    setStatus(r.sucesso ? ('Previsão salva: ' + (r.idPrev || 'ok')) : 'Falha ao salvar previsão');
+    setStatus(r.sucesso ? ('Previsão salva: ' + (r.idPrev || 'ok')) : 'Falha ao salvar');
     carregarHistoricoPrevisoes();
   } catch (e) {
     setStatus('Erro ao salvar: ' + e.message, true);
@@ -596,22 +809,16 @@ async function verificarAcertos() {
     const r = await api('verificar');
     await coletaPromise;
 
-    const sorteio = r.sorteio || (r.verificacao && r.verificacao.sorteio) || null;
-    const s = r.resumo || (r.verificacao && r.verificacao.resumo) || {};
-    const ac = r.acertos || (r.verificacao && r.verificacao.acertos) || {};
+    const sorteio = r.sorteio || null;
+    const s = r.resumo || {};
+    const ac = r.acertos || {};
 
     if (!sorteio) {
-      box.innerHTML = '<div class="empty">Nenhum sorteio encontrado. Colete resultados.</div>';
+      box.innerHTML = '<div class="empty">Nenhum sorteio encontrado.</div>';
       return;
     }
 
-    let html = '';
-    html += `<div class="draw-header">🕐 ${sorteio.data || formatarData(sorteio.data)} · ${sorteio.hora || ''} · ID ${sorteio.id || ''}</div>`;
-    html += `<div class="draw-header" style="margin-top:8px;">
-      Fonte: <strong>${r.fonte || '-'}</strong>
-      ${r.snapshotEm ? ' · ' + r.snapshotEm : ''}
-      ${r.totalSorteiosAnalisados ? ' · Base: ' + r.totalSorteiosAnalisados + ' sorteios' : ''}
-    </div>`;
+    let html = `<div class="draw-header">🕐 ${sorteio.data || ''} · ${sorteio.hora || ''} · ID ${sorteio.id || ''}</div>`;
     html += `<div class="grid" style="margin:12px 0;">`;
     (sorteio.numeros || []).forEach((n, i) => {
       html += `<div class="card"><div class="rank">Pos ${i + 1}</div><div class="num">${n}</div></div>`;
@@ -619,56 +826,16 @@ async function verificarAcertos() {
     html += `</div>`;
 
     html += `
-      <div class="section-header" style="margin-top:8px;">
-        <div class="section-title">Resumo de acertos</div>
-      </div>
+      <div class="section-header" style="margin-top:8px;"><div class="section-title">Resumo de acertos</div></div>
       <div class="grid">
         <div class="card milhar"><div class="rank">Milhar</div><div class="num">${s.milhar || 0}</div></div>
         <div class="card centena"><div class="rank">Centena</div><div class="num">${s.centena || 0}</div></div>
         <div class="card dezena"><div class="rank">Dezena</div><div class="num">${s.dezena || 0}</div></div>
         <div class="card grupo"><div class="rank">Grupo</div><div class="num">${s.grupo || 0}</div></div>
-        <div class="card" style="border-color:#2563eb;"><div class="rank">Sugestão milhar</div><div class="num">${s.sugestao || 0}</div></div>
-        <div class="card" style="border-color:#0891b2;"><div class="rank">Sugestão centena</div><div class="num">${s.sugestao_centena || 0}</div></div>
       </div>`;
 
-    function bloco(titulo, lista, classe) {
-      if (!lista || !lista.length) {
-        return `<div class="section"><div class="section-title">${titulo}</div>
-          <div class="empty" style="padding:16px;">Nenhum acerto</div></div>`;
-      }
-      let h = `<div class="section"><div class="section-title">${titulo}</div><div class="grid">`;
-      lista.forEach(a => {
-        h += `<div class="card ${classe || ''}">
-          <div class="rank">${a.tipo || ''}${a.posicao_ranking ? ' · #' + a.posicao_ranking : ''}</div>
-          <div class="num">${a.valor}${a.centena ? ' → ' + a.centena : ''}</div>
-          <div class="meta">
-            ${a.atraso != null ? 'Atraso: ' + a.atraso + ' sorteios<br>' : ''}
-            ${a.frequencia != null ? 'Freq: ' + a.frequencia + '<br>' : ''}
-            ${a.posicao_sugestao ? 'Pos sugestão: ' + a.posicao_sugestao : ''}
-          </div>
-        </div>`;
-      });
-      h += `</div></div>`;
-      return h;
-    }
-
-    html += bloco('🎯 Milhares atrasadas que saíram', ac.milhar, 'milhar');
-    html += bloco('🔢 Centenas atrasadas que saíram', ac.centena, 'centena');
-    html += bloco('📶 Dezenas atrasadas que saíram', ac.dezena, 'dezena');
-    html += bloco('🎲 Grupos atrasados que saíram', ac.grupo, 'grupo');
-    html += bloco('💡 Acertos da sugestão', ac.sugestao, '');
-
     box.innerHTML = html;
-
-    const total = (s.milhar || 0) + (s.centena || 0) + (s.dezena || 0) +
-                  (s.grupo || 0) + (s.sugestao || 0) + (s.sugestao_centena || 0);
-
-    setStatus(
-      total > 0
-        ? `Acertos: M${s.milhar || 0} C${s.centena || 0} D${s.dezena || 0} G${s.grupo || 0} · Sug ${s.sugestao || 0}/${s.sugestao_centena || 0}`
-        : 'Nenhum acerto neste sorteio'
-    );
-
+    setStatus(`Acertos: M${s.milhar||0} C${s.centena||0} D${s.dezena||0} G${s.grupo||0}`);
     carregarHistoricoPrevisoes();
   } catch (e) {
     box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
@@ -676,105 +843,158 @@ async function verificarAcertos() {
   }
 }
 
-/* ===== NOVO: PALPITE POR GRUPOS ===== */
 async function carregarPalpiteGrupos() {
   const box = document.getElementById('lista-palpite-grupos');
-  box.innerHTML = '<div class="empty">Analisando grupos atrasados e gerando palpites...</div>';
-  setStatus('Gerando palpite por grupos atrasados...');
-
+  box.innerHTML = '<div class="empty">Analisando grupos atrasados...</div>';
+  setStatus('Gerando palpite por grupos...');
   try {
     const r = await api('palpite_grupos');
-
     if (!r.grupos || !r.grupos.length) {
       box.innerHTML = '<div class="empty">Nenhum dado disponível.</div>';
       return;
     }
-
     let html = `<div class="draw-header">Gerado em ${r.geradoEm || ''} · Base: ${r.totalSorteios || 0} sorteios</div>`;
-
     r.grupos.forEach(g => {
       html += `
         <div class="pos-box" style="border-left: 4px solid #10b981;">
-          <div class="pos-title">
-            #${g.posicao} — Grupo ${g.grupo}
-            <span style="font-size:12px;color:var(--muted);font-weight:400;">
-              · Atraso: ${g.atraso} · Freq: ${g.frequencia}
-            </span>
-          </div>
-          <div class="candidatos">
-      `;
-
+          <div class="pos-title">#${g.posicao} — Grupo ${g.grupo} · Atraso: ${g.atraso}</div>
+          <div class="candidatos">`;
       (g.milhares || []).forEach(m => {
-        html += `
-          <div class="candidato" style="background:#0f2a1f;border-color:#1a4d35;">
-            <strong style="color:#6ee7b7;font-size:16px;">${m.milhar}</strong>
-            <span> · Dez ${m.dezena} · F${m.frequencia} A${m.atraso}</span>
-          </div>
-        `;
+        html += `<div class="candidato" style="background:#0f2a1f;border-color:#1a4d35;">
+          <strong style="color:#6ee7b7;font-size:16px;">${m.milhar}</strong>
+          <span> · Dez ${m.dezena}</span>
+        </div>`;
       });
-
       html += `</div></div>`;
     });
-
     box.innerHTML = html;
-    setStatus('Palpite por grupos gerado com sucesso');
+    setStatus('Palpite por grupos gerado');
   } catch (e) {
     box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
     setStatus('Erro ao gerar palpite por grupos', true);
   }
 }
 
-/* ===== AGENDADOR AUTOMÁTICO ===== */
+/* ===== NOVA FUNÇÃO: PALPITÃO ===== */
+async function carregarPalpitao() {
+  const box = document.getElementById('box-palpitao');
+  box.innerHTML = '<div class="empty">Analisando dezenas e gerando o Palpitão...</div>';
+  setStatus('Gerando Análise Palpitão...');
+
+  try {
+    const r = await api('palpitao');
+
+    if (!r.dezenas || !r.dezenas.length) {
+      box.innerHTML = '<div class="empty">Nenhum dado disponível.</div>';
+      return;
+    }
+
+    const a = r.analitico || {};
+
+    let html = `
+      <div class="draw-header">
+        Gerado em ${r.geradoEm || ''} · Base: ${r.totalSorteios || 0} sorteios
+      </div>
+
+      <div class="pos-box" style="border-left: 4px solid #f59e0b; margin-top:14px;">
+        <div class="pos-title">📊 Analítico Histórico (últimos sorteios)</div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-top:10px;">
+          <div class="card">
+            <div class="rank">Média de acertos</div>
+            <div class="num" style="color:#fbbf24;">${a.mediaAcertos || 0}</div>
+          </div>
+          <div class="card">
+            <div class="rank">Taxa ≥ 10 acertos</div>
+            <div class="num" style="color:#34d399;">${a.taxaAcima10 || 0}%</div>
+          </div>
+          <div class="card">
+            <div class="rank">Melhor resultado</div>
+            <div class="num">${a.melhor || 0}</div>
+          </div>
+          <div class="card">
+            <div class="rank">Pior resultado</div>
+            <div class="num">${a.pior || 0}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header" style="margin-top:20px;">
+        <div class="section-title">🔥 20 Dezenas do Palpitão</div>
+        <div class="section-badge">Ordenadas por força</div>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
+    `;
+
+    r.dezenas.forEach((d, i) => {
+      html += `
+        <div class="dezena-chip" title="Freq: ${d.frequencia} | Atraso: ${d.atraso} | Score: ${d.score}">
+          ${d.dezena}
+        </div>`;
+    });
+
+    html += `</div>
+
+      <div class="pos-box">
+        <div class="pos-title">Detalhamento das 20 dezenas</div>
+        <div class="grid" style="margin-top:10px;">
+    `;
+
+    r.dezenas.forEach((d, i) => {
+      html += `
+        <div class="card" style="border-color:#b45309;">
+          <div class="rank">#${i + 1}</div>
+          <div class="num" style="color:#fcd34d;">${d.dezena}</div>
+          <div class="meta">
+            Freq: ${d.frequencia}<br>
+            Atraso: ${d.atraso}<br>
+            Score: ${d.score}
+          </div>
+        </div>`;
+    });
+
+    html += `</div></div>`;
+
+    box.innerHTML = html;
+    setStatus('Palpitão gerado com sucesso');
+  } catch (e) {
+    box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
+    setStatus('Erro ao gerar Palpitão', true);
+  }
+}
+
 function getHoraMinuto() {
   const now = new Date();
   return String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
 }
-
 function getHoje() {
   return new Date().toISOString().slice(0, 10);
 }
-
 function jaExecutou(tipo, horario) {
-  const chave = `auto_${tipo}_${getHoje()}_${horario}`;
-  return localStorage.getItem(chave) === '1';
+  return localStorage.getItem(`auto_${tipo}_${getHoje()}_${horario}`) === '1';
 }
-
 function marcarExecutado(tipo, horario) {
-  const chave = `auto_${tipo}_${getHoje()}_${horario}`;
-  localStorage.setItem(chave, '1');
+  localStorage.setItem(`auto_${tipo}_${getHoje()}_${horario}`, '1');
 }
-
 function checkSchedule() {
   const hm = getHoraMinuto();
-
   HORARIOS_VERIFICAR.forEach(horaVerificar => {
     const [h, m] = horaVerificar.split(':').map(Number);
-    let salvarH = h;
-    let salvarM = m - 10;
-    if (salvarM < 0) {
-      salvarM += 60;
-      salvarH = (salvarH - 1 + 24) % 24;
-    }
-    const horaSalvar = String(salvarH).padStart(2, '0') + ':' + String(salvarM).padStart(2, '0');
-
+    let salvarH = h, salvarM = m - 10;
+    if (salvarM < 0) { salvarM += 60; salvarH = (salvarH - 1 + 24) % 24; }
+    const horaSalvar = String(salvarH).padStart(2,'0') + ':' + String(salvarM).padStart(2,'0');
     if (hm === horaSalvar && !jaExecutou('salvar', horaSalvar)) {
       marcarExecutado('salvar', horaSalvar);
-      setStatus(`⏰ Automático: salvando previsão (${horaSalvar})...`);
       salvarPrevisaoAgora();
     }
-
     if (hm === horaVerificar && !jaExecutou('verificar', horaVerificar)) {
       marcarExecutado('verificar', horaVerificar);
-      setStatus(`⏰ Automático: verificando acertos (${horaVerificar})...`);
       verificarAcertos();
     }
   });
 }
-
 setInterval(checkSchedule, 20000);
 checkSchedule();
 
-// Inicialização
 status();
 carregar();
 </script>
