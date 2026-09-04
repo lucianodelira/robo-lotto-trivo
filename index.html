@@ -190,9 +190,16 @@
       <button class="btn-copy" onclick="copiarSugestao()" id="btn-copiar-sugestao" style="display:none;">📋 Copiar Sugestão</button>
       <span class="copy-feedback" id="feedback-sugestao">Copiado!</span>
     </div>
+    <div class="section" id="secao-geral-home" style="display:none;">
+      <div class="section-header">
+        <div class="section-title">📈 Ranking Geral</div>
+        <div class="section-badge">Top 15</div>
+      </div>
+      <div class="grid" id="ranking-geral"></div>
+    </div>
   </div>
 
-  <!-- ATRASADOS GERAIS -->
+  <!-- ATRASADOS -->
   <div class="panel" id="painel-atrasados">
     <div class="subnav">
       <button class="sub-btn milhar active" onclick="mostrarAtrasado('milhar', this)">🎯 Milhar</button>
@@ -212,7 +219,7 @@
     <button class="btn btn-secondary" style="width:100%;margin-top:8px;" onclick="carregarAtrasados(true)">🔄 Atualizar atrasados</button>
   </div>
 
-  <!-- NOVA ABA: 1ª POSIÇÃO -->
+  <!-- 1ª POSIÇÃO -->
   <div class="panel" id="painel-pos1">
     <div class="section">
       <div class="section-header">
@@ -222,14 +229,12 @@
       <button class="btn btn-primary" style="width:100%;margin-bottom:16px;" onclick="carregarAtrasadosPos1()">
         🔄 Atualizar Atrasados 1ª Posição
       </button>
-
       <div class="subnav">
         <button class="sub-btn milhar active" onclick="mostrarPos1('milhar', this)">🎯 Milhar</button>
         <button class="sub-btn centena" onclick="mostrarPos1('centena', this)">🔢 Centena</button>
         <button class="sub-btn dezena" onclick="mostrarPos1('dezena', this)">📶 Dezena</button>
         <button class="sub-btn grupo" onclick="mostrarPos1('grupo', this)">🎲 Grupo</button>
       </div>
-
       <div class="section-header">
         <div class="section-title" id="titulo-pos1">Milhares mais atrasadas na 1ª posição</div>
         <div class="section-badge" id="badge-pos1">Top 15</div>
@@ -237,9 +242,7 @@
       <div class="grid" id="lista-pos1">
         <div class="empty">Toque em <strong>Atualizar Atrasados 1ª Posição</strong>.</div>
       </div>
-      <button class="btn-copy" onclick="copiarPos1()" id="btn-copiar-pos1" style="display:none;margin-top:12px;">
-        📋 Copiar estes da 1ª Posição
-      </button>
+      <button class="btn-copy" onclick="copiarPos1()" id="btn-copiar-pos1" style="display:none;margin-top:12px;">📋 Copiar estes da 1ª Posição</button>
       <span class="copy-feedback" id="feedback-pos1">Copiado!</span>
     </div>
   </div>
@@ -251,6 +254,17 @@
       <div class="sugestao-grid" id="sugestao-analise"><div class="empty">Toque em <strong>Análise</strong>.</div></div>
       <button class="btn-copy" onclick="copiarSugestao()" id="btn-copiar-sugestao-analise" style="display:none;">📋 Copiar Sugestão</button>
       <span class="copy-feedback" id="feedback-sugestao-analise">Copiado!</span>
+    </div>
+    <div class="section" id="secao-geral" style="display:none;">
+      <div class="section-header">
+        <div class="section-title">📈 Ranking Geral</div>
+        <div class="section-badge">Top 15</div>
+      </div>
+      <div class="grid" id="ranking-geral-analise"></div>
+    </div>
+    <div class="section" id="secao-posicao" style="display:none;">
+      <div class="section-header"><div class="section-title">🔢 Ranking por Posição</div></div>
+      <div id="por-posicao"></div>
     </div>
   </div>
 
@@ -267,10 +281,25 @@
     <div class="section">
       <div class="section-header">
         <div class="section-title">✅ Acertos × Último sorteio</div>
+        <div class="section-badge">Atrasados + Sugestão</div>
       </div>
       <button class="btn btn-primary" style="width:100%;margin-bottom:10px;" onclick="verificarAcertos()">🔍 Verificar agora</button>
-      <button class="btn btn-secondary" style="width:100%;margin-bottom:16px;" onclick="salvarPrevisaoAgora()">💾 Salvar previsão</button>
-      <div id="box-acertos"><div class="empty">Toque em Verificar agora.</div></div>
+      <button class="btn btn-secondary" style="width:100%;margin-bottom:16px;" onclick="salvarPrevisaoAgora()">💾 Salvar previsão (antes do próximo)</button>
+      <div id="box-acertos"><div class="empty">Toque em <strong>Verificar agora</strong> após o sorteio.</div></div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">📈 Taxa de acerto (últimas previsões)</div>
+        <div class="section-badge" id="badge-taxas">—</div>
+      </div>
+      <div id="chart-taxas"></div>
+    </div>
+    <div class="section">
+      <div class="section-header">
+        <div class="section-title">🕘 Últimas 10 previsões</div>
+      </div>
+      <button class="btn btn-secondary" style="width:100%;margin-bottom:12px;" onclick="carregarHistoricoPrevisoes()">🔄 Atualizar histórico</button>
+      <div id="lista-historico-prev"><div class="empty">Salve uma previsão antes do sorteio e verifique depois.</div></div>
     </div>
   </div>
 
@@ -279,10 +308,11 @@
     <div class="section">
       <div class="section-header">
         <div class="section-title">🎲 Palpite por Grupos Atrasados</div>
+        <div class="section-badge">4 milhares por grupo</div>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-bottom:16px;" onclick="carregarPalpiteGrupos()">🔄 Gerar / Atualizar</button>
-      <div id="lista-palpite-grupos"><div class="empty">Toque em Gerar.</div></div>
-      <button class="btn-copy" onclick="copiarPalpiteGrupos()" id="btn-copiar-grupos" style="display:none;margin-top:12px;">📋 Copiar milhares</button>
+      <button class="btn btn-primary" style="width:100%;margin-bottom:16px;" onclick="carregarPalpiteGrupos()">🔄 Gerar / Atualizar Palpite</button>
+      <div id="lista-palpite-grupos"><div class="empty">Toque em <strong>Gerar / Atualizar Palpite</strong>.</div></div>
+      <button class="btn-copy" onclick="copiarPalpiteGrupos()" id="btn-copiar-grupos" style="display:none;margin-top:12px;">📋 Copiar todas as milhares</button>
       <span class="copy-feedback" id="feedback-grupos">Copiado!</span>
     </div>
   </div>
@@ -292,10 +322,10 @@
     <div class="section">
       <div class="section-header">
         <div class="section-title">🔥 Análise Palpitão</div>
-        <div class="section-badge">20 dezenas</div>
+        <div class="section-badge">20 dezenas fortes</div>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-bottom:16px;" onclick="carregarPalpitao()">🔄 Gerar / Atualizar</button>
-      <div id="box-palpitao"><div class="empty">Toque em Gerar.</div></div>
+      <button class="btn btn-primary" style="width:100%;margin-bottom:16px;" onclick="carregarPalpitao()">🔄 Gerar / Atualizar Palpitão</button>
+      <div id="box-palpitao"><div class="empty">Toque em <strong>Gerar / Atualizar Palpitão</strong>.</div></div>
       <button class="btn-copy" onclick="copiarPalpitao()" id="btn-copiar-palpitao" style="display:none;margin-top:12px;">📋 Copiar as 20 dezenas</button>
       <span class="copy-feedback" id="feedback-palpitao">Copiado!</span>
     </div>
@@ -307,11 +337,11 @@
       <div class="section-header">
         <div class="section-title">📖 Como funciona</div>
       </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;">
-        <p style="color:#cbd5e1;margin-bottom:12px;">
-          A aba <strong>1ª Posição</strong> analisa exclusivamente os números que saíram na <strong>primeira posição</strong> de cada sorteio.
-          Assim você vê quais milhares, centenas, dezenas e grupos estão mais atrasados especificamente para a posição 1.
-        </p>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;color:#cbd5e1;font-size:14.5px;line-height:1.6;">
+        <p style="margin-bottom:12px;"><strong>1ª Posição:</strong> Analisa exclusivamente os números que saíram na primeira posição de cada sorteio.</p>
+        <p style="margin-bottom:12px;"><strong>Palpitão:</strong> Seleciona as 20 dezenas mais fortes com base em frequência + atraso + tendência recente.</p>
+        <p style="margin-bottom:12px;"><strong>Grupos:</strong> Gera 4 milhares para cada um dos 10 grupos mais atrasados.</p>
+        <p>Use os botões <strong>📋 Copiar</strong> para copiar os números facilmente.</p>
       </div>
     </div>
   </div>
@@ -328,14 +358,29 @@ let cacheSugestao = [];
 let cachePalpiteGrupos = [];
 let cachePalpitao = [];
 
-const HORARIOS_VERIFICAR = ['01:32','05:32','07:32','09:32','11:32','13:32','15:32','18:32','20:32','22:32'];
+const HORARIOS_VERIFICAR = [
+  '01:32','05:32','07:32','09:32','11:32','13:32','15:32','18:32','20:32','22:32'
+];
 
 async function api(action) {
-  const res = await fetch(API + '?action=' + encodeURIComponent(action));
-  if (!res.ok) throw new Error('Erro HTTP ' + res.status);
-  const json = await res.json();
-  if (json.sucesso === false) throw new Error(json.erro || 'Erro na API');
-  return json;
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 45000); // 45s timeout
+
+    const res = await fetch(API + '?action=' + encodeURIComponent(action), {
+      signal: controller.signal,
+      cache: 'no-store'
+    });
+    clearTimeout(timeout);
+
+    if (!res.ok) throw new Error('Erro HTTP ' + res.status);
+    const json = await res.json();
+    if (json.sucesso === false) throw new Error(json.erro || 'Erro na API');
+    return json;
+  } catch (e) {
+    if (e.name === 'AbortError') throw new Error('Tempo esgotado (timeout)');
+    throw e;
+  }
 }
 
 function setStatus(html, isError = false) {
@@ -346,358 +391,4 @@ function setStatus(html, isError = false) {
 
 function trocarPainel(id, btn) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
-  if (btn) btn.classList.add('active');
-  if (id === 'painel-atrasados') carregarAtrasados();
-  if (id === 'painel-pos1') carregarAtrasadosPos1();
-  if (id === 'painel-resultados') carregar();
-  if (id === 'painel-acertos') carregarHistoricoPrevisoes();
-  if (id === 'painel-palpite-grupos') carregarPalpiteGrupos();
-  if (id === 'painel-palpitao') carregarPalpitao();
-}
-
-function formatarData(data) {
-  if (!data) return '--/--/----';
-  if (/^\d{4}-\d{2}-\d{2}$/.test(data)) {
-    const [ano, mes, dia] = data.split('-');
-    return `${dia}/${mes}/${ano}`;
-  }
-  try {
-    const d = new Date(data);
-    if (!isNaN(d.getTime()) && d.getFullYear() > 2000) {
-      return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
-    }
-  } catch(e){}
-  return data;
-}
-
-/* ===== COPIAR ===== */
-function copiarTexto(texto, feedbackId) {
-  if (!texto) return;
-  navigator.clipboard.writeText(texto).then(() => {
-    const fb = document.getElementById(feedbackId);
-    if (fb) { fb.classList.add('show'); setTimeout(() => fb.classList.remove('show'), 1800); }
-    setStatus('Números copiados!');
-  }).catch(() => {
-    const ta = document.createElement('textarea');
-    ta.value = texto; document.body.appendChild(ta); ta.select();
-    document.execCommand('copy'); document.body.removeChild(ta);
-    setStatus('Números copiados!');
-  });
-}
-
-function copiarSugestao() {
-  if (!cacheSugestao.length) return;
-  copiarTexto(cacheSugestao.join(' '), 'feedback-sugestao');
-}
-function copiarAtrasados() {
-  if (!cacheAtrasados || !cacheAtrasados[tipoAtrasadoAtual]) return;
-  copiarTexto(cacheAtrasados[tipoAtrasadoAtual].map(i => i.valor).join(' '), 'feedback-atrasados');
-}
-function copiarPos1() {
-  if (!cachePos1 || !cachePos1[tipoPos1Atual]) return;
-  copiarTexto(cachePos1[tipoPos1Atual].map(i => i.valor).join(' '), 'feedback-pos1');
-}
-function copiarPalpiteGrupos() {
-  if (!cachePalpiteGrupos.length) return;
-  const todos = [];
-  cachePalpiteGrupos.forEach(g => (g.milhares || []).forEach(m => todos.push(m.milhar)));
-  copiarTexto(todos.join(' '), 'feedback-grupos');
-}
-function copiarPalpitao() {
-  if (!cachePalpitao.length) return;
-  copiarTexto(cachePalpitao.map(d => d.dezena).join(' '), 'feedback-palpitao');
-}
-
-/* ===== 1ª POSIÇÃO ===== */
-async function carregarAtrasadosPos1() {
-  const div = document.getElementById('lista-pos1');
-  div.innerHTML = '<div class="empty">Calculando atrasados da 1ª posição...</div>';
-  setStatus('Analisando apenas a 1ª posição...');
-  try {
-    const r = await api('atrasados_pos1');
-    cachePos1 = {
-      milhar: r.milhar || [],
-      centena: r.centena || [],
-      dezena: r.dezena || [],
-      grupo: r.grupo || [],
-      totalSorteios: r.totalSorteios || 0
-    };
-    setStatus(`1ª Posição atualizada · ${r.totalSorteios || 0} sorteios analisados`);
-    renderPos1(tipoPos1Atual);
-  } catch (e) {
-    div.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
-    setStatus('Erro ao carregar 1ª posição', true);
-  }
-}
-
-function mostrarPos1(tipo, btn) {
-  tipoPos1Atual = tipo;
-  document.querySelectorAll('#painel-pos1 .sub-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  if (!cachePos1) {
-    carregarAtrasadosPos1();
-    return;
-  }
-  renderPos1(tipo);
-}
-
-function renderPos1(tipo) {
-  const div = document.getElementById('lista-pos1');
-  const titulo = document.getElementById('titulo-pos1');
-  const badge = document.getElementById('badge-pos1');
-  const labels = {
-    milhar: 'Milhares mais atrasadas na 1ª posição',
-    centena: 'Centenas mais atrasadas na 1ª posição',
-    dezena: 'Dezenas mais atrasadas na 1ª posição',
-    grupo: 'Grupos mais atrasados na 1ª posição'
-  };
-  titulo.textContent = labels[tipo] || 'Atrasados 1ª Posição';
-  badge.textContent = 'Top 15';
-  div.innerHTML = '';
-
-  if (!cachePos1) {
-    div.innerHTML = '<div class="empty">Carregando...</div>';
-    return;
-  }
-
-  const lista = cachePos1[tipo] || [];
-  if (!lista.length) {
-    div.innerHTML = `<div class="empty">Nenhum dado de <strong>${tipo}</strong> na 1ª posição.</div>`;
-    document.getElementById('btn-copiar-pos1').style.display = 'none';
-    return;
-  }
-
-  lista.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'card ' + tipo;
-    card.innerHTML = `
-      <div class="rank">#${item.posicao}</div>
-      <div class="num">${item.valor}</div>
-      <div class="meta">
-        Atraso: ${item.atraso} sorteios<br>
-        Freq: ${item.frequencia}<br>
-        ${item.ultimo_numero || ''}
-      </div>`;
-    div.appendChild(card);
-  });
-  document.getElementById('btn-copiar-pos1').style.display = 'inline-block';
-}
-
-/* ===== DEMAIS FUNÇÕES (mantidas) ===== */
-async function status() {
-  try {
-    const r = await api('status');
-    setStatus(`Sistema online · ${r.hora || ''}`);
-  } catch (e) {
-    setStatus('API indisponível · ' + e.message, true);
-  }
-}
-
-async function coletar() {
-  setStatus('Coletando...');
-  try {
-    const r = await api('coletar');
-    setStatus(`Coleta concluída · ${r.gravados || 0} registros`);
-    carregar();
-  } catch (e) {
-    setStatus('Erro na coleta: ' + e.message, true);
-  }
-}
-
-async function carregar() {
-  try {
-    const r = await api('resultados');
-    const div = document.getElementById('resultados');
-    div.innerHTML = '';
-    if (!r.resultados || !r.resultados.length) {
-      div.innerHTML = '<div class="empty">Nenhum resultado.</div>';
-      return;
-    }
-    r.resultados.forEach(concurso => {
-      const header = document.createElement('div');
-      header.className = 'draw-header';
-      header.innerHTML = `🕐 ${formatarData(concurso.data)} · ${concurso.hora || ''}`;
-      div.appendChild(header);
-      (concurso.numeros || []).forEach((numero, pos) => {
-        if (!numero) return;
-        const card = document.createElement('div');
-        card.className = 'card';
-        card.innerHTML = `<div class="rank">Posição ${pos + 1}</div><div class="num">${numero}</div>`;
-        div.appendChild(card);
-      });
-    });
-  } catch (e) {
-    setStatus('Erro ao carregar resultados', true);
-  }
-}
-
-async function carregarAtrasados(forcar) {
-  const div = document.getElementById('lista-atrasados');
-  if (!forcar && cacheAtrasados) {
-    renderAtrasados(tipoAtrasadoAtual);
-    return;
-  }
-  div.innerHTML = '<div class="empty">Atualizando...</div>';
-  try {
-    const r = await api('atrasados');
-    cacheAtrasados = {
-      milhar: r.milhar || [], centena: r.centena || [],
-      dezena: r.dezena || [], grupo: r.grupo || []
-    };
-    renderAtrasados(tipoAtrasadoAtual);
-  } catch (e) {
-    div.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
-  }
-}
-
-function mostrarAtrasado(tipo, btn) {
-  tipoAtrasadoAtual = tipo;
-  document.querySelectorAll('#painel-atrasados .sub-btn').forEach(b => b.classList.remove('active'));
-  if (btn) btn.classList.add('active');
-  if (!cacheAtrasados) { carregarAtrasados(true); return; }
-  renderAtrasados(tipo);
-}
-
-function renderAtrasados(tipo) {
-  const div = document.getElementById('lista-atrasados');
-  const titulo = document.getElementById('titulo-atrasado');
-  const labels = {
-    milhar: '10 Milhares mais atrasadas',
-    centena: '10 Centenas mais atrasadas',
-    dezena: '10 Dezenas mais atrasadas',
-    grupo: '10 Grupos mais atrasados'
-  };
-  titulo.textContent = labels[tipo] || 'Atrasados';
-  div.innerHTML = '';
-  const lista = (cacheAtrasados && cacheAtrasados[tipo]) || [];
-  if (!lista.length) {
-    div.innerHTML = '<div class="empty">Nenhum dado.</div>';
-    return;
-  }
-  lista.forEach(item => {
-    const card = document.createElement('div');
-    card.className = 'card ' + tipo;
-    card.innerHTML = `<div class="rank">#${item.posicao}</div><div class="num">${item.valor}</div>
-      <div class="meta">Atraso: ${item.atraso}<br>Freq: ${item.frequencia}</div>`;
-    div.appendChild(card);
-  });
-  document.getElementById('btn-copiar-atrasados').style.display = 'inline-block';
-}
-
-async function previsao() {
-  setStatus('Calculando análise...');
-  try {
-    const r = await api('previsao');
-    cacheSugestao = r.sugestao || [];
-    ['sugestao', 'sugestao-analise'].forEach(id => {
-      const el = document.getElementById(id);
-      if (!el) return;
-      el.innerHTML = '';
-      (r.sugestao || []).forEach((num, i) => {
-        const card = document.createElement('div');
-        card.className = 'sugestao-card';
-        card.innerHTML = `<div class="pos">Pos ${i+1}</div><div class="num">${num}</div>`;
-        el.appendChild(card);
-      });
-    });
-    document.getElementById('btn-copiar-sugestao').style.display = cacheSugestao.length ? 'inline-block' : 'none';
-    document.getElementById('btn-copiar-sugestao-analise').style.display = cacheSugestao.length ? 'inline-block' : 'none';
-    setStatus('Análise atualizada');
-    trocarPainel('painel-analise', document.querySelector('[data-panel="painel-analise"]'));
-  } catch (e) {
-    setStatus('Erro na análise', true);
-  }
-}
-
-async function backtest() {
-  setStatus('Executando backtest...');
-  try {
-    const r = await api('backtest');
-    setStatus(`Backtest · ${r.testes || 0} testes`);
-  } catch (e) {
-    setStatus('Erro no backtest', true);
-  }
-}
-
-async function carregarHistoricoPrevisoes() {
-  // Mantido simplificado
-}
-
-async function salvarPrevisaoAgora() {
-  setStatus('Salvando previsão...');
-  try {
-    const r = await api('salvar_previsao');
-    setStatus(r.sucesso ? 'Previsão salva' : 'Falha');
-  } catch (e) {
-    setStatus('Erro ao salvar', true);
-  }
-}
-
-async function verificarAcertos() {
-  const box = document.getElementById('box-acertos');
-  box.innerHTML = '<div class="empty">Verificando...</div>';
-  try {
-    const r = await api('verificar');
-    const s = r.resumo || {};
-    box.innerHTML = `
-      <div class="grid">
-        <div class="card milhar"><div class="rank">Milhar</div><div class="num">${s.milhar||0}</div></div>
-        <div class="card centena"><div class="rank">Centena</div><div class="num">${s.centena||0}</div></div>
-        <div class="card dezena"><div class="rank">Dezena</div><div class="num">${s.dezena||0}</div></div>
-        <div class="card grupo"><div class="rank">Grupo</div><div class="num">${s.grupo||0}</div></div>
-      </div>`;
-  } catch (e) {
-    box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
-  }
-}
-
-async function carregarPalpiteGrupos() {
-  const box = document.getElementById('lista-palpite-grupos');
-  box.innerHTML = '<div class="empty">Gerando...</div>';
-  try {
-    const r = await api('palpite_grupos');
-    cachePalpiteGrupos = r.grupos || [];
-    let html = '';
-    (r.grupos || []).forEach(g => {
-      html += `<div class="pos-box" style="border-left:4px solid #10b981;">
-        <div class="pos-title">Grupo ${g.grupo} · Atraso ${g.atraso}</div>
-        <div class="candidatos">`;
-      (g.milhares || []).forEach(m => {
-        html += `<div class="candidato" style="background:#0f2a1f;border-color:#1a4d35;">
-          <strong style="color:#6ee7b7;">${m.milhar}</strong></div>`;
-      });
-      html += `</div></div>`;
-    });
-    box.innerHTML = html || '<div class="empty">Sem dados</div>';
-    document.getElementById('btn-copiar-grupos').style.display = cachePalpiteGrupos.length ? 'inline-block' : 'none';
-  } catch (e) {
-    box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
-  }
-}
-
-async function carregarPalpitao() {
-  const box = document.getElementById('box-palpitao');
-  box.innerHTML = '<div class="empty">Gerando Palpitão...</div>';
-  try {
-    const r = await api('palpitao');
-    cachePalpitao = r.dezenas || [];
-    let html = `<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">`;
-    (r.dezenas || []).forEach(d => {
-      html += `<div class="dezena-chip">${d.dezena}</div>`;
-    });
-    html += `</div>`;
-    box.innerHTML = html;
-    document.getElementById('btn-copiar-palpitao').style.display = cachePalpitao.length ? 'inline-block' : 'none';
-  } catch (e) {
-    box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
-  }
-}
-
-// Inicialização
-status();
-carregar();
-</script>
-</body>
-</html>
+  document.qu
