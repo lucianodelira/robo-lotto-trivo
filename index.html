@@ -984,6 +984,41 @@ function checkSchedule() {
   });
 }
 
+
+
+/* ===== NOVA FUNÇÃO: SALVAR PREVISÃO 5 MINUTOS DEPOIS DO RESULTADO ===== */
+function checkSalvar5MinDepois() {
+  const hm = getHoraMinuto();
+  
+  HORARIOS_VERIFICAR.forEach(horaResultado => {
+    const [h, m] = horaResultado.split(':').map(Number);
+    
+    // Calcula 5 minutos depois do resultado
+    let salvarH = h;
+    let salvarM = m + 5;
+    
+    if (salvarM >= 60) {
+      salvarM -= 60;
+      salvarH = (salvarH + 1) % 24;
+    }
+    
+    const horaSalvar = String(salvarH).padStart(2, '0') + ':' + String(salvarM).padStart(2, '0');
+    
+    // Salva a previsão 5 minutos depois do resultado
+    if (hm === horaSalvar && !jaExecutou('salvar_5min', horaSalvar)) {
+      marcarExecutado('salvar_5min', horaSalvar);
+      setStatus(`⏰ Automático: salvando previsão 5 min após resultado (${horaSalvar})...`);
+      salvarPrevisaoAgora();
+    }
+  });
+}
+
+// Adiciona a verificação da nova função no intervalo já existente
+setInterval(checkSalvar5MinDepois, 20000);
+checkSalvar5MinDepois();
+
+
+  
 setInterval(checkSchedule, 20000);
 checkSchedule();
 
