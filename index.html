@@ -33,11 +33,18 @@
     flex-shrink: 0; box-shadow: 0 0 8px var(--success);
   }
   .status.error .dot { background: var(--danger); box-shadow: 0 0 8px var(--danger); }
-  .nav { display: grid; grid-template-columns: repeat(9, 1fr); gap: 5px; margin-bottom: 14px; }
-  @media (max-width: 800px) { .nav { grid-template-columns: repeat(3, 1fr); } }
+  .nav {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  @media (min-width: 700px) {
+    .nav { grid-template-columns: repeat(5, 1fr); }
+  }
   .nav-btn {
     border: 1px solid var(--border); background: var(--card); color: var(--text);
-    border-radius: 12px; padding: 11px 3px; font-size: 10.5px; font-weight: 600;
+    border-radius: 12px; padding: 12px 6px; font-size: 12px; font-weight: 600;
     cursor: pointer; transition: all 0.2s; text-align: center;
   }
   .nav-btn:hover { background: var(--card-hover); }
@@ -59,18 +66,15 @@
   .btn-secondary { background: var(--card); border: 1px solid var(--border); color: #fff; }
   .btn-copy {
     background: #1e293b; border: 1px solid #334155; color: #e2e8f0;
-    padding: 8px 14px; font-size: 12px; border-radius: 8px; cursor: pointer; margin-top: 8px;
+    padding: 8px 14px; font-size: 12px; border-radius: 8px; cursor: pointer; margin-top: 10px;
   }
-  .btn-copy:hover { background: #334155; }
-  .btn:active { transform: scale(0.98); }
   .subnav { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
   @media (max-width: 520px) { .subnav { grid-template-columns: repeat(2, 1fr); } }
   .sub-btn {
     border: 1px solid var(--border); background: #0f1520; color: var(--muted);
     border-radius: 10px; padding: 11px 6px; font-size: 12px; font-weight: 600;
-    cursor: pointer; transition: all 0.2s;
+    cursor: pointer;
   }
-  .sub-btn:hover { color: var(--text); background: var(--card); }
   .sub-btn.active { color: #fff; border-color: transparent; }
   .sub-btn.active.milhar  { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
   .sub-btn.active.centena { background: linear-gradient(135deg, #0891b2, #0e7490); }
@@ -105,8 +109,6 @@
   .pos-title { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
   .candidatos { display: flex; flex-wrap: wrap; gap: 8px; }
   .candidato { background: #1e293b; border: 1px solid #334155; padding: 7px 11px; border-radius: 8px; font-size: 13px; }
-  .candidato strong { color: #fff; }
-  .candidato span { color: var(--muted); font-size: 12px; }
   .empty { text-align: center; padding: 36px 16px; color: var(--muted); font-size: 14px; grid-column: 1 / -1; }
   .card.milhar  { border-color: #5b21b6; }
   .card.centena { border-color: #0e7490; }
@@ -141,10 +143,6 @@
     border: 1px solid #1a4d35; border-radius: 10px;
     font-weight: 800; font-size: 16px; color: #6ee7b7; margin: 4px;
   }
-  .copy-feedback {
-    font-size: 12px; color: #6ee7b7; margin-left: 8px; opacity: 0; transition: opacity 0.3s;
-  }
-  .copy-feedback.show { opacity: 1; }
 </style>
 </head>
 <body>
@@ -156,28 +154,28 @@
 
   <div class="status" id="status">
     <div class="dot"></div>
-    <div>Carregando sistema...</div>
+    <div id="status-text">Carregando sistema...</div>
   </div>
 
-  <div class="nav">
-    <button class="nav-btn active" data-panel="painel-inicio" onclick="trocarPainel('painel-inicio', this)">🏠 Início</button>
-    <button class="nav-btn" data-panel="painel-atrasados" onclick="trocarPainel('painel-atrasados', this)">⏳ Atrasados</button>
-    <button class="nav-btn" data-panel="painel-pos1" onclick="trocarPainel('painel-pos1', this)">1️⃣ 1ª Posição</button>
-    <button class="nav-btn" data-panel="painel-analise" onclick="trocarPainel('painel-analise', this)">📊 Análise</button>
-    <button class="nav-btn" data-panel="painel-resultados" onclick="trocarPainel('painel-resultados', this)">📋 Resultados</button>
-    <button class="nav-btn" data-panel="painel-acertos" onclick="trocarPainel('painel-acertos', this)">✅ Acertos</button>
-    <button class="nav-btn" data-panel="painel-palpite-grupos" onclick="trocarPainel('painel-palpite-grupos', this)">🎲 Grupos</button>
-    <button class="nav-btn" data-panel="painel-palpitao" onclick="trocarPainel('painel-palpitao', this)">🔥 Palpitão</button>
-    <button class="nav-btn" data-panel="painel-explicacao" onclick="trocarPainel('painel-explicacao', this)">📖 Como Funciona</button>
+  <div class="nav" id="nav">
+    <button class="nav-btn active" data-panel="painel-inicio">🏠 Início</button>
+    <button class="nav-btn" data-panel="painel-atrasados">⏳ Atrasados</button>
+    <button class="nav-btn" data-panel="painel-pos1">1️⃣ 1ª Posição</button>
+    <button class="nav-btn" data-panel="painel-analise">📊 Análise</button>
+    <button class="nav-btn" data-panel="painel-resultados">📋 Resultados</button>
+    <button class="nav-btn" data-panel="painel-acertos">✅ Acertos</button>
+    <button class="nav-btn" data-panel="painel-grupos">🎲 Grupos</button>
+    <button class="nav-btn" data-panel="painel-palpitao">🔥 Palpitão</button>
+    <button class="nav-btn" data-panel="painel-explicacao">📖 Como Funciona</button>
   </div>
 
   <div class="actions">
-    <button class="btn btn-primary" onclick="coletar()">🔄 Coletar</button>
-    <button class="btn btn-secondary" onclick="previsao()">📊 Análise</button>
-    <button class="btn btn-secondary" onclick="backtest()">🧪 Backtest</button>
+    <button class="btn btn-primary" id="btn-coletar">🔄 Coletar</button>
+    <button class="btn btn-secondary" id="btn-analise">📊 Análise</button>
+    <button class="btn btn-secondary" id="btn-backtest">🧪 Backtest</button>
   </div>
 
-  <!-- INÍCIO -->
+  <!-- PAINÉIS -->
   <div class="panel active" id="painel-inicio">
     <div class="section">
       <div class="section-header">
@@ -187,208 +185,587 @@
       <div class="sugestao-grid" id="sugestao">
         <div class="empty">Toque em <strong>Análise</strong> para gerar a sugestão.</div>
       </div>
-      <button class="btn-copy" onclick="copiarSugestao()" id="btn-copiar-sugestao" style="display:none;">📋 Copiar Sugestão</button>
-      <span class="copy-feedback" id="feedback-sugestao">Copiado!</span>
-    </div>
-    <div class="section" id="secao-geral-home" style="display:none;">
-      <div class="section-header">
-        <div class="section-title">📈 Ranking Geral</div>
-        <div class="section-badge">Top 15</div>
-      </div>
-      <div class="grid" id="ranking-geral"></div>
+      <button class="btn-copy" id="btn-copiar-sugestao" style="display:none;">📋 Copiar Sugestão</button>
     </div>
   </div>
 
-  <!-- ATRASADOS -->
   <div class="panel" id="painel-atrasados">
-    <div class="subnav">
-      <button class="sub-btn milhar active" onclick="mostrarAtrasado('milhar', this)">🎯 Milhar</button>
-      <button class="sub-btn centena" onclick="mostrarAtrasado('centena', this)">🔢 Centena</button>
-      <button class="sub-btn dezena" onclick="mostrarAtrasado('dezena', this)">📶 Dezena</button>
-      <button class="sub-btn grupo" onclick="mostrarAtrasado('grupo', this)">🎲 Grupo</button>
+    <div class="subnav" id="subnav-atrasados">
+      <button class="sub-btn milhar active" data-tipo="milhar">🎯 Milhar</button>
+      <button class="sub-btn centena" data-tipo="centena">🔢 Centena</button>
+      <button class="sub-btn dezena" data-tipo="dezena">📶 Dezena</button>
+      <button class="sub-btn grupo" data-tipo="grupo">🎲 Grupo</button>
     </div>
     <div class="section">
       <div class="section-header">
         <div class="section-title" id="titulo-atrasado">10 Milhares mais atrasadas</div>
-        <div class="section-badge" id="badge-atrasado">Top 10</div>
       </div>
-      <div class="grid" id="lista-atrasados"><div class="empty">Carregando...</div></div>
-      <button class="btn-copy" onclick="copiarAtrasados()" id="btn-copiar-atrasados" style="display:none;margin-top:12px;">📋 Copiar estes Atrasados</button>
-      <span class="copy-feedback" id="feedback-atrasados">Copiado!</span>
+      <div class="grid" id="lista-atrasados">
+        <div class="empty">Carregando...</div>
+      </div>
+      <button class="btn-copy" id="btn-copiar-atrasados" style="display:none;">📋 Copiar estes Atrasados</button>
     </div>
-    <button class="btn btn-secondary" style="width:100%;margin-top:8px;" onclick="carregarAtrasados(true)">🔄 Atualizar atrasados</button>
+    <button class="btn btn-secondary" style="width:100%;margin-top:10px;" id="btn-atualizar-atrasados">🔄 Atualizar atrasados</button>
   </div>
 
-  <!-- 1ª POSIÇÃO -->
   <div class="panel" id="painel-pos1">
     <div class="section">
       <div class="section-header">
         <div class="section-title">1️⃣ Atrasados da 1ª Posição</div>
-        <div class="section-badge">Exclusivo posição 1</div>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-bottom:16px;" onclick="carregarAtrasadosPos1()">
+      <button class="btn btn-primary" style="width:100%;margin-bottom:16px;" id="btn-atualizar-pos1">
         🔄 Atualizar Atrasados 1ª Posição
       </button>
-      <div class="subnav">
-        <button class="sub-btn milhar active" onclick="mostrarPos1('milhar', this)">🎯 Milhar</button>
-        <button class="sub-btn centena" onclick="mostrarPos1('centena', this)">🔢 Centena</button>
-        <button class="sub-btn dezena" onclick="mostrarPos1('dezena', this)">📶 Dezena</button>
-        <button class="sub-btn grupo" onclick="mostrarPos1('grupo', this)">🎲 Grupo</button>
-      </div>
-      <div class="section-header">
-        <div class="section-title" id="titulo-pos1">Milhares mais atrasadas na 1ª posição</div>
-        <div class="section-badge" id="badge-pos1">Top 15</div>
+      <div class="subnav" id="subnav-pos1">
+        <button class="sub-btn milhar active" data-tipo="milhar">🎯 Milhar</button>
+        <button class="sub-btn centena" data-tipo="centena">🔢 Centena</button>
+        <button class="sub-btn dezena" data-tipo="dezena">📶 Dezena</button>
+        <button class="sub-btn grupo" data-tipo="grupo">🎲 Grupo</button>
       </div>
       <div class="grid" id="lista-pos1">
-        <div class="empty">Toque em <strong>Atualizar Atrasados 1ª Posição</strong>.</div>
+        <div class="empty">Toque em Atualizar.</div>
       </div>
-      <button class="btn-copy" onclick="copiarPos1()" id="btn-copiar-pos1" style="display:none;margin-top:12px;">📋 Copiar estes da 1ª Posição</button>
-      <span class="copy-feedback" id="feedback-pos1">Copiado!</span>
+      <button class="btn-copy" id="btn-copiar-pos1" style="display:none;">📋 Copiar 1ª Posição</button>
     </div>
   </div>
 
-  <!-- ANÁLISE -->
   <div class="panel" id="painel-analise">
     <div class="section">
       <div class="section-header"><div class="section-title">🎯 Sugestão de Jogo</div></div>
-      <div class="sugestao-grid" id="sugestao-analise"><div class="empty">Toque em <strong>Análise</strong>.</div></div>
-      <button class="btn-copy" onclick="copiarSugestao()" id="btn-copiar-sugestao-analise" style="display:none;">📋 Copiar Sugestão</button>
-      <span class="copy-feedback" id="feedback-sugestao-analise">Copiado!</span>
-    </div>
-    <div class="section" id="secao-geral" style="display:none;">
-      <div class="section-header">
-        <div class="section-title">📈 Ranking Geral</div>
-        <div class="section-badge">Top 15</div>
+      <div class="sugestao-grid" id="sugestao-analise">
+        <div class="empty">Toque em Análise.</div>
       </div>
-      <div class="grid" id="ranking-geral-analise"></div>
-    </div>
-    <div class="section" id="secao-posicao" style="display:none;">
-      <div class="section-header"><div class="section-title">🔢 Ranking por Posição</div></div>
-      <div id="por-posicao"></div>
+      <button class="btn-copy" id="btn-copiar-sugestao2" style="display:none;">📋 Copiar Sugestão</button>
     </div>
   </div>
 
-  <!-- RESULTADOS -->
   <div class="panel" id="painel-resultados">
     <div class="section">
       <div class="section-header"><div class="section-title">📋 Últimos Resultados</div></div>
-      <div class="grid" id="resultados"><div class="empty">Carregando resultados...</div></div>
+      <div class="grid" id="resultados">
+        <div class="empty">Carregando resultados...</div>
+      </div>
     </div>
   </div>
 
-  <!-- ACERTOS -->
   <div class="panel" id="painel-acertos">
     <div class="section">
       <div class="section-header">
         <div class="section-title">✅ Acertos × Último sorteio</div>
-        <div class="section-badge">Atrasados + Sugestão</div>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-bottom:10px;" onclick="verificarAcertos()">🔍 Verificar agora</button>
-      <button class="btn btn-secondary" style="width:100%;margin-bottom:16px;" onclick="salvarPrevisaoAgora()">💾 Salvar previsão (antes do próximo)</button>
-      <div id="box-acertos"><div class="empty">Toque em <strong>Verificar agora</strong> após o sorteio.</div></div>
+      <button class="btn btn-primary" style="width:100%;margin-bottom:10px;" id="btn-verificar">🔍 Verificar agora</button>
+      <button class="btn btn-secondary" style="width:100%;margin-bottom:16px;" id="btn-salvar-previsao">💾 Salvar previsão</button>
+      <div id="box-acertos">
+        <div class="empty">Toque em Verificar agora.</div>
+      </div>
     </div>
     <div class="section">
       <div class="section-header">
-        <div class="section-title">📈 Taxa de acerto (últimas previsões)</div>
+        <div class="section-title">📈 Taxa de acerto</div>
         <div class="section-badge" id="badge-taxas">—</div>
       </div>
       <div id="chart-taxas"></div>
     </div>
     <div class="section">
-      <div class="section-header">
-        <div class="section-title">🕘 Últimas 10 previsões</div>
+      <div class="section-header"><div class="section-title">🕘 Últimas previsões</div></div>
+      <button class="btn btn-secondary" style="width:100%;margin-bottom:12px;" id="btn-atualizar-historico">🔄 Atualizar histórico</button>
+      <div id="lista-historico-prev">
+        <div class="empty">Nenhuma previsão ainda.</div>
       </div>
-      <button class="btn btn-secondary" style="width:100%;margin-bottom:12px;" onclick="carregarHistoricoPrevisoes()">🔄 Atualizar histórico</button>
-      <div id="lista-historico-prev"><div class="empty">Salve uma previsão antes do sorteio e verifique depois.</div></div>
     </div>
   </div>
 
-  <!-- GRUPOS -->
-  <div class="panel" id="painel-palpite-grupos">
+  <div class="panel" id="painel-grupos">
     <div class="section">
       <div class="section-header">
-        <div class="section-title">🎲 Palpite por Grupos Atrasados</div>
-        <div class="section-badge">4 milhares por grupo</div>
+        <div class="section-title">🎲 Palpite por Grupos</div>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-bottom:16px;" onclick="carregarPalpiteGrupos()">🔄 Gerar / Atualizar Palpite</button>
-      <div id="lista-palpite-grupos"><div class="empty">Toque em <strong>Gerar / Atualizar Palpite</strong>.</div></div>
-      <button class="btn-copy" onclick="copiarPalpiteGrupos()" id="btn-copiar-grupos" style="display:none;margin-top:12px;">📋 Copiar todas as milhares</button>
-      <span class="copy-feedback" id="feedback-grupos">Copiado!</span>
+      <button class="btn btn-primary" style="width:100%;margin-bottom:16px;" id="btn-grupos">🔄 Gerar / Atualizar</button>
+      <div id="lista-grupos">
+        <div class="empty">Toque em Gerar.</div>
+      </div>
+      <button class="btn-copy" id="btn-copiar-grupos" style="display:none;">📋 Copiar milhares</button>
     </div>
   </div>
 
-  <!-- PALPITÃO -->
   <div class="panel" id="painel-palpitao">
     <div class="section">
       <div class="section-header">
         <div class="section-title">🔥 Análise Palpitão</div>
-        <div class="section-badge">20 dezenas fortes</div>
       </div>
-      <button class="btn btn-primary" style="width:100%;margin-bottom:16px;" onclick="carregarPalpitao()">🔄 Gerar / Atualizar Palpitão</button>
-      <div id="box-palpitao"><div class="empty">Toque em <strong>Gerar / Atualizar Palpitão</strong>.</div></div>
-      <button class="btn-copy" onclick="copiarPalpitao()" id="btn-copiar-palpitao" style="display:none;margin-top:12px;">📋 Copiar as 20 dezenas</button>
-      <span class="copy-feedback" id="feedback-palpitao">Copiado!</span>
+      <button class="btn btn-primary" style="width:100%;margin-bottom:16px;" id="btn-palpitao">🔄 Gerar / Atualizar</button>
+      <div id="box-palpitao">
+        <div class="empty">Toque em Gerar.</div>
+      </div>
+      <button class="btn-copy" id="btn-copiar-palpitao" style="display:none;">📋 Copiar as 20 dezenas</button>
     </div>
   </div>
 
-  <!-- COMO FUNCIONA -->
   <div class="panel" id="painel-explicacao">
     <div class="section">
-      <div class="section-header">
-        <div class="section-title">📖 Como funciona</div>
-      </div>
-      <div style="background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;color:#cbd5e1;font-size:14.5px;line-height:1.6;">
-        <p style="margin-bottom:12px;"><strong>1ª Posição:</strong> Analisa exclusivamente os números que saíram na primeira posição de cada sorteio.</p>
-        <p style="margin-bottom:12px;"><strong>Palpitão:</strong> Seleciona as 20 dezenas mais fortes com base em frequência + atraso + tendência recente.</p>
-        <p style="margin-bottom:12px;"><strong>Grupos:</strong> Gera 4 milhares para cada um dos 10 grupos mais atrasados.</p>
-        <p>Use os botões <strong>📋 Copiar</strong> para copiar os números facilmente.</p>
+      <div class="section-header"><div class="section-title">📖 Como funciona</div></div>
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px;color:#cbd5e1;font-size:14px;line-height:1.6;">
+        <p style="margin-bottom:12px;"><strong>1ª Posição:</strong> mostra os números mais atrasados apenas na primeira posição do sorteio.</p>
+        <p style="margin-bottom:12px;"><strong>Palpitão:</strong> 20 dezenas mais fortes (frequência + atraso + tendência).</p>
+        <p><strong>Grupos:</strong> 4 milhares para cada um dos 10 grupos mais atrasados.</p>
       </div>
     </div>
   </div>
 </div>
 
 <script>
+// ====================== CONFIGURAÇÃO ======================
 const API = 'https://script.google.com/macros/s/AKfycbwB1IMATuzJerRoWu9QVX5fKLApC8_uW_XxCdOp_UIsr5TZv8o9rvGs1ZxXlflVmfCDGw/exec';
 
 let cacheAtrasados = null;
-let tipoAtrasadoAtual = 'milhar';
+let tipoAtrasado = 'milhar';
 let cachePos1 = null;
-let tipoPos1Atual = 'milhar';
+let tipoPos1 = 'milhar';
 let cacheSugestao = [];
-let cachePalpiteGrupos = [];
+let cacheGrupos = [];
 let cachePalpitao = [];
 
-const HORARIOS_VERIFICAR = [
-  '01:32','05:32','07:32','09:32','11:32','13:32','15:32','18:32','20:32','22:32'
-];
+// ====================== FUNÇÕES BÁSICAS ======================
+function setStatus(texto, isError = false) {
+  const el = document.getElementById('status');
+  const txt = document.getElementById('status-text');
+  if (el) el.className = 'status' + (isError ? ' error' : '');
+  if (txt) txt.textContent = texto;
+}
 
 async function api(action) {
+  const url = API + '?action=' + encodeURIComponent(action);
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 40000);
+
   try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 45000); // 45s timeout
-
-    const res = await fetch(API + '?action=' + encodeURIComponent(action), {
-      signal: controller.signal,
-      cache: 'no-store'
-    });
-    clearTimeout(timeout);
-
-    if (!res.ok) throw new Error('Erro HTTP ' + res.status);
+    const res = await fetch(url, { signal: controller.signal, cache: 'no-store' });
+    clearTimeout(timeoutId);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
     const json = await res.json();
-    if (json.sucesso === false) throw new Error(json.erro || 'Erro na API');
+    if (json && json.sucesso === false) throw new Error(json.erro || 'Erro na API');
     return json;
-  } catch (e) {
-    if (e.name === 'AbortError') throw new Error('Tempo esgotado (timeout)');
-    throw e;
+  } catch (err) {
+    clearTimeout(timeoutId);
+    throw err;
   }
 }
 
-function setStatus(html, isError = false) {
-  const el = document.getElementById('status');
-  el.className = 'status' + (isError ? ' error' : '');
-  el.innerHTML = `<div class="dot"></div><div>${html}</div>`;
+function trocarPainel(id) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+
+  const painel = document.getElementById(id);
+  if (painel) painel.classList.add('active');
+
+  const btn = document.querySelector(`.nav-btn[data-panel="${id}"]`);
+  if (btn) btn.classList.add('active');
+
+  // Carrega dados sob demanda
+  if (id === 'painel-atrasados') carregarAtrasados();
+  if (id === 'painel-pos1') carregarPos1();
+  if (id === 'painel-resultados') carregarResultados();
+  if (id === 'painel-acertos') carregarHistorico();
+  if (id === 'painel-grupos') carregarGrupos();
+  if (id === 'painel-palpitao') carregarPalpitao();
 }
 
-function trocarPainel(id, btn) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.qu
+// ====================== COPIAR ======================
+function copiar(texto) {
+  if (!texto) return;
+  navigator.clipboard.writeText(texto).then(() => {
+    setStatus('Números copiados!');
+  }).catch(() => {
+    const ta = document.createElement('textarea');
+    ta.value = texto;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    setStatus('Números copiados!');
+  });
+}
+
+// ====================== STATUS INICIAL ======================
+async function iniciar() {
+  try {
+    const r = await api('status');
+    setStatus('Sistema online · ' + (r.hora || ''));
+  } catch (e) {
+    setStatus('API offline ou com problema · ' + (e.message || 'Failed to fetch'), true);
+  }
+}
+
+// ====================== COLETAR + RESULTADOS ======================
+async function coletar() {
+  setStatus('Coletando...');
+  try {
+    const r = await api('coletar');
+    setStatus('Coleta concluída · ' + (r.gravados || r.importados || 0) + ' registros');
+    carregarResultados();
+  } catch (e) {
+    setStatus('Erro na coleta: ' + e.message, true);
+  }
+}
+
+async function carregarResultados() {
+  const div = document.getElementById('resultados');
+  if (!div) return;
+  try {
+    const r = await api('resultados');
+    div.innerHTML = '';
+    if (!r.resultados || !r.resultados.length) {
+      div.innerHTML = '<div class="empty">Nenhum resultado. Toque em Coletar.</div>';
+      return;
+    }
+    r.resultados.forEach(c => {
+      const h = document.createElement('div');
+      h.className = 'draw-header';
+      h.textContent = `🕐 ${c.data || ''} · ${c.hora || ''}`;
+      div.appendChild(h);
+      (c.numeros || []).forEach((n, i) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.innerHTML = `<div class="rank">Pos ${i+1}</div><div class="num">${n}</div>`;
+        div.appendChild(card);
+      });
+    });
+  } catch (e) {
+    div.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
+  }
+}
+
+// ====================== ATRASADOS ======================
+async function carregarAtrasados() {
+  const div = document.getElementById('lista-atrasados');
+  if (!div) return;
+  if (cacheAtrasados) {
+    renderAtrasados();
+    return;
+  }
+  div.innerHTML = '<div class="empty">Carregando atrasados...</div>';
+  try {
+    const r = await api('atrasados');
+    cacheAtrasados = {
+      milhar: r.milhar || [],
+      centena: r.centena || [],
+      dezena: r.dezena || [],
+      grupo: r.grupo || []
+    };
+    renderAtrasados();
+    setStatus('Atrasados atualizados');
+  } catch (e) {
+    div.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
+  }
+}
+
+function renderAtrasados() {
+  const div = document.getElementById('lista-atrasados');
+  const titulo = document.getElementById('titulo-atrasado');
+  if (!div || !cacheAtrasados) return;
+
+  const labels = {
+    milhar: '10 Milhares mais atrasadas',
+    centena: '10 Centenas mais atrasadas',
+    dezena: '10 Dezenas mais atrasadas',
+    grupo: '10 Grupos mais atrasados'
+  };
+  if (titulo) titulo.textContent = labels[tipoAtrasado] || 'Atrasados';
+
+  const lista = cacheAtrasados[tipoAtrasado] || [];
+  div.innerHTML = '';
+  if (!lista.length) {
+    div.innerHTML = '<div class="empty">Nenhum dado.</div>';
+    return;
+  }
+  lista.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'card ' + tipoAtrasado;
+    card.innerHTML = `
+      <div class="rank">#${item.posicao || ''}</div>
+      <div class="num">${item.valor}</div>
+      <div class="meta">Atraso: ${item.atraso}<br>Freq: ${item.frequencia || 0}</div>`;
+    div.appendChild(card);
+  });
+  const btn = document.getElementById('btn-copiar-atrasados');
+  if (btn) btn.style.display = 'inline-block';
+}
+
+// ====================== 1ª POSIÇÃO ======================
+async function carregarPos1() {
+  const div = document.getElementById('lista-pos1');
+  if (!div) return;
+  div.innerHTML = '<div class="empty">Calculando 1ª posição...</div>';
+  try {
+    const r = await api('atrasados_pos1');
+    cachePos1 = {
+      milhar: r.milhar || [],
+      centena: r.centena || [],
+      dezena: r.dezena || [],
+      grupo: r.grupo || []
+    };
+    renderPos1();
+    setStatus('1ª Posição atualizada');
+  } catch (e) {
+    div.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
+  }
+}
+
+function renderPos1() {
+  const div = document.getElementById('lista-pos1');
+  if (!div || !cachePos1) return;
+  const lista = cachePos1[tipoPos1] || [];
+  div.innerHTML = '';
+  if (!lista.length) {
+    div.innerHTML = '<div class="empty">Nenhum dado.</div>';
+    return;
+  }
+  lista.forEach(item => {
+    const card = document.createElement('div');
+    card.className = 'card ' + tipoPos1;
+    card.innerHTML = `
+      <div class="rank">#${item.posicao || ''}</div>
+      <div class="num">${item.valor}</div>
+      <div class="meta">Atraso: ${item.atraso}<br>Freq: ${item.frequencia || 0}</div>`;
+    div.appendChild(card);
+  });
+  const btn = document.getElementById('btn-copiar-pos1');
+  if (btn) btn.style.display = 'inline-block';
+}
+
+// ====================== ANÁLISE / PREVISÃO ======================
+async function fazerAnalise() {
+  setStatus('Calculando análise...');
+  try {
+    const r = await api('previsao');
+    cacheSugestao = r.sugestao || [];
+
+    ['sugestao', 'sugestao-analise'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.innerHTML = '';
+      cacheSugestao.forEach((num, i) => {
+        const card = document.createElement('div');
+        card.className = 'sugestao-card';
+        card.innerHTML = `<div class="pos">Pos ${i+1}</div><div class="num">${num}</div>`;
+        el.appendChild(card);
+      });
+    });
+
+    document.getElementById('btn-copiar-sugestao').style.display = cacheSugestao.length ? 'inline-block' : 'none';
+    document.getElementById('btn-copiar-sugestao2').style.display = cacheSugestao.length ? 'inline-block' : 'none';
+
+    setStatus('Análise pronta');
+    trocarPainel('painel-analise');
+  } catch (e) {
+    setStatus('Erro na análise: ' + e.message, true);
+  }
+}
+
+// ====================== ACERTOS ======================
+async function verificarAcertos() {
+  const box = document.getElementById('box-acertos');
+  if (!box) return;
+  box.innerHTML = '<div class="empty">Verificando...</div>';
+  setStatus('Verificando acertos...');
+  try {
+    // Tenta coletar em paralelo
+    api('coletar').catch(() => {});
+
+    const r = await api('verificar');
+    const s = r.resumo || {};
+    const sorteio = r.sorteio || {};
+
+    let html = `<div class="draw-header">🕐 ${sorteio.data || ''} · ${sorteio.hora || ''}</div>`;
+    html += `<div class="grid" style="margin:12px 0;">`;
+    (sorteio.numeros || []).forEach((n, i) => {
+      html += `<div class="card"><div class="rank">Pos ${i+1}</div><div class="num">${n}</div></div>`;
+    });
+    html += `</div>
+      <div class="grid">
+        <div class="card milhar"><div class="rank">Milhar</div><div class="num">${s.milhar||0}</div></div>
+        <div class="card centena"><div class="rank">Centena</div><div class="num">${s.centena||0}</div></div>
+        <div class="card dezena"><div class="rank">Dezena</div><div class="num">${s.dezena||0}</div></div>
+        <div class="card grupo"><div class="rank">Grupo</div><div class="num">${s.grupo||0}</div></div>
+      </div>`;
+    box.innerHTML = html;
+    setStatus(`Acertos → M:${s.milhar||0} C:${s.centena||0} D:${s.dezena||0} G:${s.grupo||0}`);
+    carregarHistorico();
+  } catch (e) {
+    box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
+    setStatus('Erro na verificação', true);
+  }
+}
+
+async function salvarPrevisao() {
+  setStatus('Salvando previsão...');
+  try {
+    const r = await api('salvar_previsao');
+    setStatus(r.sucesso ? 'Previsão salva!' : 'Falha ao salvar');
+    carregarHistorico();
+  } catch (e) {
+    setStatus('Erro ao salvar: ' + e.message, true);
+  }
+}
+
+async function carregarHistorico() {
+  const box = document.getElementById('lista-historico-prev');
+  const chart = document.getElementById('chart-taxas');
+  if (!box) return;
+  try {
+    const r = await api('historico_previsoes');
+    if (chart) {
+      const t = r.taxas || {};
+      chart.innerHTML = `
+        <div class="bar-row"><div class="bar-label">Milhar</div><div class="bar-track"><div class="bar-fill milhar" style="width:${t.milhar||0}%"></div></div><div class="bar-pct">${t.milhar||0}%</div></div>
+        <div class="bar-row"><div class="bar-label">Centena</div><div class="bar-track"><div class="bar-fill centena" style="width:${t.centena||0}%"></div></div><div class="bar-pct">${t.centena||0}%</div></div>
+        <div class="bar-row"><div class="bar-label">Dezena</div><div class="bar-track"><div class="bar-fill dezena" style="width:${t.dezena||0}%"></div></div><div class="bar-pct">${t.dezena||0}%</div></div>
+        <div class="bar-row"><div class="bar-label">Grupo</div><div class="bar-track"><div class="bar-fill grupo" style="width:${t.grupo||0}%"></div></div><div class="bar-pct">${t.grupo||0}%</div></div>
+        <div class="bar-row"><div class="bar-label">Sugestão</div><div class="bar-track"><div class="bar-fill sugestao" style="width:${t.sugestao||0}%"></div></div><div class="bar-pct">${t.sugestao||0}%</div></div>`;
+    }
+    const badge = document.getElementById('badge-taxas');
+    if (badge) badge.textContent = (r.fechados || 0) + ' fechadas';
+
+    box.innerHTML = '';
+    (r.itens || []).forEach(it => {
+      const ac = it.acertos || {};
+      const st = it.status === 'FECHADO' ? '<span class="badge-ok">FECHADO</span>' : '<span class="badge-pend">PENDENTE</span>';
+      const div = document.createElement('div');
+      div.className = 'hist-card';
+      div.innerHTML = `<div class="title">${st} · ${it.criado || ''}</div>
+        <div class="meta">Acertos → M:${ac.milhar||0} C:${ac.centena||0} D:${ac.dezena||0} G:${ac.grupo||0}</div>`;
+      box.appendChild(div);
+    });
+  } catch (e) {
+    box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
+  }
+}
+
+// ====================== GRUPOS + PALPITÃO ======================
+async function carregarGrupos() {
+  const box = document.getElementById('lista-grupos');
+  if (!box) return;
+  box.innerHTML = '<div class="empty">Gerando...</div>';
+  try {
+    const r = await api('palpite_grupos');
+    cacheGrupos = r.grupos || [];
+    let html = '';
+    cacheGrupos.forEach(g => {
+      html += `<div class="pos-box" style="border-left:4px solid #10b981;">
+        <div class="pos-title">Grupo ${g.grupo} · Atraso ${g.atraso}</div>
+        <div class="candidatos">`;
+      (g.milhares || []).forEach(m => {
+        html += `<div class="candidato"><strong style="color:#6ee7b7">${m.milhar}</strong></div>`;
+      });
+      html += `</div></div>`;
+    });
+    box.innerHTML = html || '<div class="empty">Sem dados</div>';
+    document.getElementById('btn-copiar-grupos').style.display = cacheGrupos.length ? 'inline-block' : 'none';
+  } catch (e) {
+    box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
+  }
+}
+
+async function carregarPalpitao() {
+  const box = document.getElementById('box-palpitao');
+  if (!box) return;
+  box.innerHTML = '<div class="empty">Gerando Palpitão...</div>';
+  try {
+    const r = await api('palpitao');
+    cachePalpitao = r.dezenas || [];
+    let html = '<div style="display:flex;flex-wrap:wrap;gap:6px;">';
+    cachePalpitao.forEach(d => {
+      html += `<div class="dezena-chip">${d.dezena}</div>`;
+    });
+    html += '</div>';
+    box.innerHTML = html;
+    document.getElementById('btn-copiar-palpitao').style.display = cachePalpitao.length ? 'inline-block' : 'none';
+  } catch (e) {
+    box.innerHTML = `<div class="empty">Erro: ${e.message}</div>`;
+  }
+}
+
+// ====================== EVENTOS ======================
+document.addEventListener('DOMContentLoaded', function() {
+  // Navegação
+  document.querySelectorAll('.nav-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      trocarPainel(this.getAttribute('data-panel'));
+    });
+  });
+
+  // Botões principais
+  document.getElementById('btn-coletar').addEventListener('click', coletar);
+  document.getElementById('btn-analise').addEventListener('click', fazerAnalise);
+  document.getElementById('btn-backtest').addEventListener('click', async () => {
+    setStatus('Executando backtest...');
+    try {
+      const r = await api('backtest');
+      setStatus('Backtest concluído');
+    } catch(e) {
+      setStatus('Erro no backtest', true);
+    }
+  });
+
+  // Atrasados
+  document.getElementById('btn-atualizar-atrasados').addEventListener('click', () => {
+    cacheAtrasados = null;
+    carregarAtrasados();
+  });
+  document.querySelectorAll('#subnav-atrasados .sub-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#subnav-atrasados .sub-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      tipoAtrasado = this.getAttribute('data-tipo');
+      renderAtrasados();
+    });
+  });
+
+  // 1ª Posição
+  document.getElementById('btn-atualizar-pos1').addEventListener('click', carregarPos1);
+  document.querySelectorAll('#subnav-pos1 .sub-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('#subnav-pos1 .sub-btn').forEach(b => b.classList.remove('active'));
+      this.classList.add('active');
+      tipoPos1 = this.getAttribute('data-tipo');
+      renderPos1();
+    });
+  });
+
+  // Acertos
+  document.getElementById('btn-verificar').addEventListener('click', verificarAcertos);
+  document.getElementById('btn-salvar-previsao').addEventListener('click', salvarPrevisao);
+  document.getElementById('btn-atualizar-historico').addEventListener('click', carregarHistorico);
+
+  // Grupos e Palpitão
+  document.getElementById('btn-grupos').addEventListener('click', carregarGrupos);
+  document.getElementById('btn-palpitao').addEventListener('click', carregarPalpitao);
+
+  // Botões de copiar
+  document.getElementById('btn-copiar-sugestao').addEventListener('click', () => copiar(cacheSugestao.join(' ')));
+  document.getElementById('btn-copiar-sugestao2').addEventListener('click', () => copiar(cacheSugestao.join(' ')));
+  document.getElementById('btn-copiar-atrasados').addEventListener('click', () => {
+    if (cacheAtrasados && cacheAtrasados[tipoAtrasado]) {
+      copiar(cacheAtrasados[tipoAtrasado].map(i => i.valor).join(' '));
+    }
+  });
+  document.getElementById('btn-copiar-pos1').addEventListener('click', () => {
+    if (cachePos1 && cachePos1[tipoPos1]) {
+      copiar(cachePos1[tipoPos1].map(i => i.valor).join(' '));
+    }
+  });
+  document.getElementById('btn-copiar-grupos').addEventListener('click', () => {
+    const nums = [];
+    cacheGrupos.forEach(g => (g.milhares||[]).forEach(m => nums.push(m.milhar)));
+    copiar(nums.join(' '));
+  });
+  document.getElementById('btn-copiar-palpitao').addEventListener('click', () => {
+    copiar(cachePalpitao.map(d => d.dezena).join(' '));
+  });
+
+  // Inicia o sistema
+  iniciar();
+});
+</script>
+</body>
+</html>
